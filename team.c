@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 int main(int argc, char* argv[]) {
-	printf("Team: dhairya_dennis\n\n");
+	printf("Team: Dhairya_Dennis\n\n");
 	
 	printf("Dhairya Agrawal\n");
 	printf("dhairyaagrawal\n\n");
