@@ -4,7 +4,7 @@ lex.yy.c : myscanner.ll
 	@flex myscanner.ll
 
 compiler : lex.yy.c myscanner.c
-	@gcc -Wall myscanner.c lex.yy.c -o myscanner.o
+	@gcc myscanner.c lex.yy.c -o myscanner.o
 
 clean : lex.yy.c myscanner.o
 	@rm lex.yy.c myscanner.o
