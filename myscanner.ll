@@ -1,5 +1,6 @@
 %{
-#include "myscanner.h"
+#include "microParser.h"
+extern char* yytext;
 %}
 
 %%
