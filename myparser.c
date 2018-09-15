@@ -2,8 +2,7 @@
 #include "stdlib.h"
 #include "microParser.h"
 
-//extern int yyparse();
-//extern int yyerror();
+extern int yyparse();
 extern int yylex();
 extern FILE * yyin;
 extern char * yytext;
