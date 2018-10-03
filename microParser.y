@@ -70,11 +70,11 @@ primary:            "(" expr ")" | id | INTLITERAL | FLOATLITERAL;
 addop:              "+" | "-";
 mulop:              "*" | "/";
 
-if_stmt:             {printf("\nSymbol Table BLOCK %d\n", scope); scope++;} IF "(" cond ")" decl stmt_list else_part ENDIF;
-else_part:           {printf("\nSymbol Table BLOCK %d\n", scope); scope++;} ELSE decl stmt_list | ;
+if_stmt:             {printf("\nSymbol table BLOCK %d\n", scope); scope++;} IF "(" cond ")" decl stmt_list else_part ENDIF;
+else_part:           {printf("\nSymbol table BLOCK %d\n", scope); scope++;} ELSE decl stmt_list | ;
 cond:                expr compop expr | TRUE | FALSE;
 compop:              "<" | ">" | "=" | "!=" | "<=" | ">=";
-while_stmt:          {printf("\nSymbol Table BLOCK %d\n", scope); scope++;} WHILE "(" cond ")" decl stmt_list ENDWHILE;
+while_stmt:          {printf("\nSymbol table BLOCK %d\n", scope); scope++;} WHILE "(" cond ")" decl stmt_list ENDWHILE;
 
 control_stmt:        return_stmt;
 loop_stmt:           while_stmt;
