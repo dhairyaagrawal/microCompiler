@@ -41,7 +41,7 @@ id_list:    id {if(flag) {printf("name %s type %s\n", $<stringValue>1, varType);
 id_tail:    "," id {if(flag) {printf("name %s type %s\n", $<stringValue>2, varType);}} id_tail | ;
 
 param_decl_list:    param_decl param_decl_tail | ;
-param_decl:         var_type id {printf("name %s type %s\n", $<stringValue>2, $<stringValue>1)};
+param_decl:         var_type id {printf("name %s type %s\n", $<stringValue>2, $<stringValue>1);};
 param_decl_tail:    "," param_decl param_decl_tail | ;
 
 func_declarations:  func_decl func_declarations | ;
