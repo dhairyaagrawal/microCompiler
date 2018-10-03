@@ -16,10 +16,10 @@ extern char* yytext;
 "WHILE"			return WHILE;
 "ENDWHILE"		return ENDWHILE;
 "RETURN"		return RETURN;
-"INT"			return INT;
+"INT"			yylval.stringValue = "INT"; return INT;
 "VOID"			return VOID;
 "STRING"		return STRING;
-"FLOAT"			return FLOAT;
+"FLOAT"			yylval.stringValue = "FLOAT"; return FLOAT;
 "TRUE"			return TRUE;
 "FALSE"			return FALSE;
 --.*	                ;
@@ -39,10 +39,10 @@ extern char* yytext;
 "<="			return LEQ;
 ">="			return GEQ;
 
-[a-zA-Z][_a-zA-Z0-9]*	return IDENTIFIER;
+[a-zA-Z][_a-zA-Z0-9]*	yylval.stringValue = strdup(yytext); return IDENTIFIER;
 [0-9][0-9]*		return INTLITERAL;
 [0-9]*\.[0-9][0-9]*	return FLOATLITERAL;
-\"(\\.|[^"\\])*\"	return STRINGLITERAL;
+\"(\\.|[^"\\])*\"	yylval.stringValue = strdup(yytext); return STRINGLITERAL;
 [ \t\n]			;
 
 %%
