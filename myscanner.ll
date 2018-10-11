@@ -1,5 +1,6 @@
 %{
-#include "microParser.h"
+#include <string>
+#include "microParser.hpp"
 extern char* yytext;
 %}
 
@@ -16,10 +17,10 @@ extern char* yytext;
 "WHILE"			return WHILE;
 "ENDWHILE"		return ENDWHILE;
 "RETURN"		return RETURN;
-"INT"			yylval.stringValue = "INT"; return INT;
+"INT"			yylval.stringValue = strdup(yytext); return INT;
 "VOID"			return VOID;
 "STRING"		return STRING;
-"FLOAT"			yylval.stringValue = "FLOAT"; return FLOAT;
+"FLOAT"			yylval.stringValue = strdup(yytext); return FLOAT;
 "TRUE"			return TRUE;
 "FALSE"			return FALSE;
 --.*	                ;

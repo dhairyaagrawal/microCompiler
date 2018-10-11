@@ -1,51 +1,80 @@
 %{
+    #include <iostream>
+    #include <string>
     #include <stdio.h>
-    #include <string.h>
+    #include <cstring>
+    #include "stack.h"
+    #include "table.h"
+    #include "table_entry.h"
+	
+%}
+
+%{ 
+    #ifndef STACK_H 
+    #define STACK_H 
+    #include "../src/stack.h" 
+    #endif 
+    
+    #ifndef TABLE_H 
+    #define TABLE_H 
+    #include "../src/table.h" 
+    #endif 
+
+    #ifndef TABLE_ENTRY_H 
+    #define TABLE_ENTRY_H 
+    #include "../src/table_entry.h" 
+    #endif 
+%}
+
+%{
     extern int yylex();
-    extern int yylineno;
+    //extern int yylineno;
     extern char * yytext;
     void yyerror(const char * s) {
         //printf("Error Line %d token %s\n",yylineno,yytext);
     }
-    char* varType = "FLOAT";
+    extern stack* myStack;
+    std::string varType = "FLOAT";
     int scope = 1;
     int flag = 0;
+    table* currTable = NULL;
 %}
-
-%union{
-    int intValue;
-    float floatValue;
-    char *stringValue;
-}
 
 %token  END "end of file"
 %token  IDENTIFIER INTLITERAL FLOATLITERAL STRINGLITERAL
 %token  PROGRAM BEG FUNCTION READ WRITE IF ELSE ENDIF WHILE ENDWHILE RETURN INT VOID STRING FLOAT TRUE FALSE
 %token  DEF ":=" ADD "+" SUB "-" MUL "*" DIV "/" EQ "=" NEQ "!=" LESS "<" GRET ">" LPAR "(" RPAR ")" SEMI ";" COM "," LEQ "<=" GEQ ">="
+
+%type <stringValue> id str var_type;
+
+%union{
+    int intValue;
+    float floatValue;
+    //std::string * stringValue;
+    char * stringValue;
+}
+
 %%
-
-%type <stringValue> id str var_type id_list;
-
-program:  {printf("Symbol table GLOBAL\n");} PROGRAM id BEG pgm_body END;
+program:  {myStack = new stack; currTable = new table("Symbol table GLOBAL");} PROGRAM id BEG pgm_body END;
 id:       IDENTIFIER {$$ = $<stringValue>1;};
 pgm_body: decl func_declarations;
 decl:     string_decl decl | var_decl decl | ;
 
-string_decl:  STRING id ":=" str ";" {printf("name %s type STRING value %s\n", $2, $4);};
+string_decl:  STRING id ":=" str ";" {currTable->add(new table_entry("STRING", ($<stringValue>2), ($<stringValue>4)));};
 str:          STRINGLITERAL {$$ = $<stringValue>1;};
 
 var_decl:   var_type {flag = 1;} id_list ";"
-var_type:   FLOAT {$$ = $<stringValue>1; varType = "FLOAT";} | INT {$$ = $<stringValue>1; varType = "INT";};
+var_type:   FLOAT {varType = "FLOAT";} | INT {varType = "INT";};
 any_type:   var_type | VOID;
-id_list:    id {if(flag) {printf("name %s type %s\n", $<stringValue>1, varType);}} id_tail;
-id_tail:    "," id {if(flag) {printf("name %s type %s\n", $<stringValue>2, varType);}} id_tail | ;
+id_list:    id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>1), "")); }} id_tail;
+id_tail:    "," id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>2), ""));}} id_tail | ;
 
 param_decl_list:    param_decl param_decl_tail | ;
-param_decl:         var_type id {printf("name %s type %s\n", $<stringValue>2, $<stringValue>1);};
+param_decl:         var_type id {currTable->add(new table_entry(($<stringValue>1), ($<stringValue>2), ""));};
 param_decl_tail:    "," param_decl param_decl_tail | ;
 
 func_declarations:  func_decl func_declarations | ;
-func_decl:          FUNCTION any_type id {printf("\nSymbol table %s\n", $<stringValue>3);} "(" param_decl_list ")" BEG func_body END;
+func_decl:          FUNCTION any_type id {myStack->push(currTable); currTable = new table("Symbol table " + std::string($<stringValue>3));} "(" param_decl_list ")" BEG func_body END;
 func_body:          decl stmt_list;
 
 stmt_list:          stmt stmt_list | ;
@@ -70,11 +99,11 @@ primary:            "(" expr ")" | id | INTLITERAL | FLOATLITERAL;
 addop:              "+" | "-";
 mulop:              "*" | "/";
 
-if_stmt:             {printf("\nSymbol table BLOCK %d\n", scope); scope++;} IF "(" cond ")" decl stmt_list else_part ENDIF;
-else_part:           {printf("\nSymbol table BLOCK %d\n", scope); scope++;} ELSE decl stmt_list | ;
+if_stmt:             {myStack->push(currTable); currTable = new table("Symbol table BLOCK " + std::to_string(scope)); scope++;} IF "(" cond ")" decl stmt_list else_part ENDIF;
+else_part:           {myStack->push(currTable); currTable = new table("Symbol table BLOCK " + std::to_string(scope)); scope++;} ELSE decl stmt_list | ;
 cond:                expr compop expr | TRUE | FALSE;
 compop:              "<" | ">" | "=" | "!=" | "<=" | ">=";
-while_stmt:          {printf("\nSymbol table BLOCK %d\n", scope); scope++;} WHILE "(" cond ")" decl stmt_list ENDWHILE;
+while_stmt:          {myStack->push(currTable); currTable = new table("Symbol table BLOCK " + std::to_string(scope)); scope++;} WHILE "(" cond ")" decl stmt_list ENDWHILE;
 
 control_stmt:        return_stmt;
 loop_stmt:           while_stmt;
