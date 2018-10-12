@@ -6,34 +6,34 @@
     #include "stack.h"
     #include "table.h"
     #include "table_entry.h"
-	
+
 %}
 
-%{ 
-    #ifndef STACK_H 
-    #define STACK_H 
-    #include "../src/stack.h" 
-    #endif 
-    
-    #ifndef TABLE_H 
-    #define TABLE_H 
-    #include "../src/table.h" 
-    #endif 
+%{
+    #ifndef STACK_H
+    #define STACK_H
+    #include "stack.h"
+    #endif
 
-    #ifndef TABLE_ENTRY_H 
-    #define TABLE_ENTRY_H 
-    #include "../src/table_entry.h" 
-    #endif 
+    #ifndef TABLE_H
+    #define TABLE_H
+    #include "table.h"
+    #endif
+
+    #ifndef TABLE_ENTRY_H
+    #define TABLE_ENTRY_H
+    #include "table_entry.h"
+    #endif
 %}
 
 %{
     extern int yylex();
-    //extern int yylineno;
+    extern int yylineno;
     extern char * yytext;
     void yyerror(const char * s) {
-        //printf("Error Line %d token %s\n",yylineno,yytext);
+        printf("Error Line %d token %s\n",yylineno,yytext);
     }
-    extern stack* myStack;
+    stack* myStack;
     std::string varType = "FLOAT";
     int scope = 1;
     int flag = 0;
@@ -55,7 +55,7 @@
 }
 
 %%
-program:  {myStack = new stack; currTable = new table("Symbol table GLOBAL");} PROGRAM id BEG pgm_body END;
+program:  {myStack = new stack; currTable = new table("Symbol table GLOBAL");} PROGRAM id BEG pgm_body END {myStack->push(currTable);}; 
 id:       IDENTIFIER {$$ = $<stringValue>1;};
 pgm_body: decl func_declarations;
 decl:     string_decl decl | var_decl decl | ;

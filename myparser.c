@@ -11,13 +11,13 @@ extern int yylineno;
 int main (int argc, char * argv[]) {
   int flag;
   yyin = fopen(argv[1], "r");
-  flag = yyparse(); 
+  flag = yyparse();
   fclose(yyin);
-  
-  /*if(flag == 0) {
+
+  if(flag == 0) {
     printf("Accepted\n");
   } else {
     printf("Not Accepted\n");
-  }*/
+  }
   return 0;
 }

@@ -18,7 +18,7 @@ public:
 	void push(table*);
 	table* pop();
 
-private:
+public:
 	table* tables[1000];
 	int tableCt;
 };

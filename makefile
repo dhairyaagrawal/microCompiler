@@ -6,14 +6,14 @@ lex.yy.c : myscanner.ll
 scanner : lex.yy.c myscanner.c
 	@gcc myscanner.c lex.yy.c -o scanner.o
 
-microParser.c : microParser.y
-	@bison microParser.y -d -o microParser.c
+microParser.cpp : microParser.y
+	@bison microParser.y -d -o microParser.cpp
 
-compiler : microParser.c lex.yy.c myparser.c
-	@gcc microParser.c lex.yy.c myparser.c -o myparser.o
+compiler : microParser.cpp lex.yy.c
+	@g++ -o myparser.o microParser.cpp lex.yy.c myparser.cpp table.cpp stack.cpp table_entry.cpp
 
-clean : lex.yy.c microParser.c microParser.h
-	@rm lex.yy.c microParser.c microParser.h
+clean : lex.yy.c microParser.cpp microParser.hpp
+	@rm lex.yy.c microParser.cpp microParser.hpp
 
 team.o : team.c
 	@gcc -g -Wall team.c -o team.o
