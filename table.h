@@ -17,6 +17,7 @@ public:
 	virtual ~table();
 	void print_table();
 	void add(table_entry*);
+	std::string search(std::string);
 
 private:
 	table_entry* entries[1000];

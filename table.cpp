@@ -39,3 +39,12 @@ void table::print_table() {
 	}
 	return;
 }
+
+std::string table::search(std::string name) {
+	for(int i = 0; i < entryCt; i++) {
+		if(entries[i]->name == name) {
+			return entries[i]->type;
+		}
+	}
+	return "";
+}

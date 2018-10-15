@@ -1,5 +1,6 @@
 %{
 #include <string>
+#include "ASTNode.h"
 #include "microParser.hpp"
 extern char* yytext;
 %}
@@ -41,8 +42,8 @@ extern char* yytext;
 ">="			return GEQ;
 
 [a-zA-Z][_a-zA-Z0-9]*	yylval.stringValue = strdup(yytext); return IDENTIFIER;
-[0-9][0-9]*		return INTLITERAL;
-[0-9]*\.[0-9][0-9]*	return FLOATLITERAL;
+[0-9][0-9]*		yylval.stringValue = strdup(yytext); return INTLITERAL;
+[0-9]*\.[0-9][0-9]*	yylval.stringValue = strdup(yytext); return FLOATLITERAL;
 \"(\\.|[^"\\])*\"	yylval.stringValue = strdup(yytext); return STRINGLITERAL;
 [ \t\n]			;
 
