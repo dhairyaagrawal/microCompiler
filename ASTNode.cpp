@@ -11,7 +11,17 @@ ASTNode::~ASTNode() {
 }
 
 void ASTNode::print() {
-	if(left == nullptr || right == nullptr) {
+	if(type == "READ" or type == "WRITE") {
+		std::cout << type << " ";
+		ASTNode* tmp = this;
+		while(tmp != nullptr) {
+			std::cout << tmp->op << ",";
+			tmp = tmp->right;
+		}
+		return;
+	}
+
+	if(left == nullptr and right == nullptr) {
 		std::cout << op;
 		return;
 	}

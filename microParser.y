@@ -17,13 +17,14 @@
         printf("Error Line %d token %s\n",yylineno,yytext);
     }
     
-    stack* myStack = nullptr;;
-    std::list<ASTNode*>* listAST = nullptr;;
+    stack* myStack = nullptr;
+    std::list<ASTNode*>* listAST = nullptr;
     std::string varType = "FLOAT";
     int scope = 1;
     int flag = 0;
     table *currTable = nullptr;
-    ASTNode *tmpNode = nullptr;;
+    ASTNode *tmpNode = nullptr;
+    ASTNode *listID = nullptr;
 %}
 
 %union{
@@ -54,8 +55,12 @@ str:          STRINGLITERAL {$$ = $<stringValue>1;};
 var_decl:   var_type {flag = 1;} id_list ";"
 var_type:   FLOAT {varType = "FLOAT";} | INT {varType = "INT";};
 any_type:   var_type | VOID;
-id_list:    id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>1), "")); }} id_tail;
-id_tail:    "," id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>2), ""));}} id_tail | ;
+id_list:    id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>1), ""));}
+				else {listID = new ASTNode(nullptr,nullptr,$<stringValue>1,varType,nullptr); tmpNode = listID;}} 
+			id_tail;
+id_tail:    "," id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>2), ""));}
+					else {tmpNode->right = new ASTNode($<stringValue>2); tmpNode = tmpNode->right;}} 
+			id_tail | ;
 
 param_decl_list:    param_decl param_decl_tail | ;
 param_decl:         var_type id {currTable->add(new table_entry(($<stringValue>1), ($<stringValue>2), ""));};
@@ -71,8 +76,8 @@ base_stmt:          assign_stmt | read_stmt | write_stmt | control_stmt;
 
 assign_stmt:        assign_expr {listAST->push_back($<treeNode>1);} ";";
 assign_expr:        id ":=" expr {varType = myStack->tables[0]->search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, nullptr);};
-read_stmt:          {flag = 0;} READ "(" id_list ")" ";";
-write_stmt:         {flag = 0;} WRITE "(" id_list ")" ";";
+read_stmt:          {flag = 0; varType = "READ";} READ "(" id_list ")" ";" {listAST->push_back(listID);};
+write_stmt:         {flag = 0; varType = "WRITE";} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
 return_stmt:        RETURN expr ";";
 
 expr:               expr_prefix factor 
