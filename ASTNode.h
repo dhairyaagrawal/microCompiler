@@ -7,6 +7,7 @@
 class ASTNode {
 public:
     ASTNode(std::string);
+    ASTNode(std::string, std::string);
     ASTNode(ASTNode*, ASTNode*, std::string, std::string, table_entry*);
     virtual ~ASTNode();
     virtual void print();

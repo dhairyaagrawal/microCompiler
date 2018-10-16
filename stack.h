@@ -14,11 +14,9 @@ class stack {
 public:
 	stack();
 	virtual ~stack();
-
 	void push(table*);
 	table* pop();
 
-public:
 	table* tables[1000];
 	int tableCt;
 };

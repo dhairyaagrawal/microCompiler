@@ -19,7 +19,6 @@ public:
 	void add(table_entry*);
 	std::string search(std::string);
 
-private:
 	table_entry* entries[1000];
 	int entryCt;
 	std::string title;

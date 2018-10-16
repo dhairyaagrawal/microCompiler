@@ -56,10 +56,10 @@ var_decl:   var_type {flag = 1;} id_list ";"
 var_type:   FLOAT {varType = "FLOAT";} | INT {varType = "INT";};
 any_type:   var_type | VOID;
 id_list:    id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>1), ""));}
-				else {listID = new ASTNode(nullptr,nullptr,$<stringValue>1,varType,nullptr); tmpNode = listID;}} 
+				else {varType = myStack->tables[0]->search($<stringValue>1); tmpNode->right = new ASTNode($<stringValue>1,varType); tmpNode = tmpNode->right;}} 
 			id_tail;
 id_tail:    "," id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>2), ""));}
-					else {tmpNode->right = new ASTNode($<stringValue>2); tmpNode = tmpNode->right;}} 
+					else {varType = myStack->tables[0]->search($<stringValue>2); tmpNode->right = new ASTNode($<stringValue>2,varType); tmpNode = tmpNode->right;}} 
 			id_tail | ;
 
 param_decl_list:    param_decl param_decl_tail | ;
@@ -75,9 +75,9 @@ stmt:               base_stmt | if_stmt | loop_stmt;
 base_stmt:          assign_stmt | read_stmt | write_stmt | control_stmt;
 
 assign_stmt:        assign_expr {listAST->push_back($<treeNode>1);} ";";
-assign_expr:        id ":=" expr {varType = myStack->tables[0]->search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, nullptr);};
-read_stmt:          {flag = 0; varType = "READ";} READ "(" id_list ")" ";" {listAST->push_back(listID);};
-write_stmt:         {flag = 0; varType = "WRITE";} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
+assign_expr:        id ":=" expr {varType = myStack->tables[0]->search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1,varType); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, nullptr);};
+read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" id_list ")" ";" {listAST->push_back(listID);};
+write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
 return_stmt:        RETURN expr ";";
 
 expr:               expr_prefix factor 
@@ -108,7 +108,7 @@ postfix_expr:       primary {$$ = $<treeNode>1;} | call_expr {$$ = nullptr;};
 call_expr:          id "(" expr_list ")";
 expr_list:          expr expr_list_tail | ;
 expr_list_tail:     "," expr expr_list_tail | ;
-primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {$$ = new ASTNode($<stringValue>1);} | INTLITERAL {$$ = new ASTNode($<stringValue>1);} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1);};
+primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = myStack->tables[0]->search($<stringValue>1); $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
 addop:              "+" {$$ = new ASTNode("+");} | "-" {$$ = new ASTNode("-");};
 mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 
