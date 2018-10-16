@@ -1,6 +1,7 @@
 #include "iostream"
 #include <string>
 #include <stdio.h>
+#include <cstring>
 #include <list>
 #include "stack.h"
 #include "table.h"
