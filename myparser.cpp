@@ -1,4 +1,5 @@
-#include "iostream"
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <stdio.h>
 #include <cstring>
@@ -114,13 +115,13 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 
 CodeObject* parseAST(ASTNode* root) {
 	//POST-ORDER WALK: left, right, root
-	CodeObject* left = nullptr;
-	CodeObject* right = nullptr;
+	CodeObject* left = NULL;
+	CodeObject* right = NULL;
 
 	if(root->type == "READ") {
 		CodeObject* tmp = new CodeObject();
 		ASTNode* idx = root->right;
-		while(idx != nullptr) {
+		while(idx != NULL) {
 			if(idx->type == "INT") {tmp->IRseq.push_back(IRNode("READI", "", "", idx->op));}
 			else if(idx->type == "FLOAT") {tmp->IRseq.push_back(IRNode("READF", "", "", idx->op));}
 			idx = idx->right;
@@ -129,7 +130,7 @@ CodeObject* parseAST(ASTNode* root) {
 	} else if(root->type == "WRITE") {
 		CodeObject* tmp = new CodeObject();
 		ASTNode* idx = root->right;
-		while(idx != nullptr) {
+		while(idx != NULL) {
 			if(idx->type == "INT") {tmp->IRseq.push_back(IRNode("WRITEI", idx->op, "", ""));}
 			else if(idx->type == "FLOAT") {tmp->IRseq.push_back(IRNode("WRITEF", idx->op, "", ""));}
 			else if(idx->type == "STRING") {tmp->IRseq.push_back(IRNode("WRITES", idx->op, "", ""));}
@@ -139,21 +140,23 @@ CodeObject* parseAST(ASTNode* root) {
 	}
 
 
-	if(root->left != nullptr) {
+	if(root->left != NULL) {
 		left = parseAST(root->left);
 	}
-	if(root->right != nullptr) {
+	if(root->right != NULL) {
 		right = parseAST(root->right);
 	}
 	//do stuff
-	if(root->left == nullptr and root->right == nullptr) {
+	if(root->left == NULL and root->right == NULL) {
 		CodeObject* tmp = new CodeObject(root->op, root->type);
 		return tmp;
 	} else if(root->op == "+") {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		tmp->result = "r"+ std::to_string(CodeObject::resultCt++);
+		std::ostringstream os;
+		os << CodeObject::resultCt++;
+		tmp->result = "r"+ os.str();
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -166,7 +169,9 @@ CodeObject* parseAST(ASTNode* root) {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		tmp->result = "r"+ std::to_string(CodeObject::resultCt++);
+		std::ostringstream os;
+		os << CodeObject::resultCt++;
+		tmp->result = "r"+ os.str();
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -179,7 +184,9 @@ CodeObject* parseAST(ASTNode* root) {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		tmp->result = "r"+ std::to_string(CodeObject::resultCt++);
+		std::ostringstream os;
+		os << CodeObject::resultCt++;
+		tmp->result = "r"+ os.str();
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -192,7 +199,9 @@ CodeObject* parseAST(ASTNode* root) {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		tmp->result = "r"+ std::to_string(CodeObject::resultCt++);
+		std::ostringstream os;
+		os << CodeObject::resultCt++;
+		tmp->result = "r"+ os.str();
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -215,7 +224,7 @@ CodeObject* parseAST(ASTNode* root) {
 		}
 		return tmp;
 	}
-	return nullptr;
+	return NULL;
 }
 
 

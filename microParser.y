@@ -1,6 +1,7 @@
 %{
 	#include "ASTNode.h"
     #include <iostream>
+    #include <sstream>
     #include <stdio.h>
     #include <string>
 	#include <list>
@@ -18,14 +19,15 @@
         //printf("Error Line %d token %s\n",yylineno,yytext);
     }
     
-    stack* myStack = nullptr;
-    std::list<ASTNode*>* listAST = nullptr;
+    stack* myStack = NULL;
+    std::list<ASTNode*>* listAST = NULL;
     std::string varType = "FLOAT";
     int scope = 1;
     int flag = 0;
-    table *currTable = nullptr;
-    ASTNode *tmpNode = nullptr;
-    ASTNode *listID = nullptr;
+    table *currTable = NULL;
+    ASTNode *tmpNode = NULL;
+    ASTNode *listID = NULL;
+    std::ostringstream os;
 %}
 
 %union{
@@ -76,36 +78,36 @@ stmt:               base_stmt | if_stmt | loop_stmt;
 base_stmt:          assign_stmt | read_stmt | write_stmt | control_stmt;
 
 assign_stmt:        assign_expr {listAST->push_back($<treeNode>1);} ";";
-assign_expr:        id ":=" expr {varType = myStack->tables[0]->search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1,varType); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, nullptr);};
+assign_expr:        id ":=" expr {varType = myStack->tables[0]->search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1,varType); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, NULL);};
 read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" id_list ")" ";" {listAST->push_back(listID);};
 write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
 return_stmt:        RETURN expr ";";
 
 expr:               expr_prefix factor 
-					{if($<treeNode>1 == nullptr) 
+					{if($<treeNode>1 == NULL) 
 					{$$ = $<treeNode>2;} 
 					else 
 					{$<treeNode>1->right = $<treeNode>2; $$ = $<treeNode>1;}};
 expr_prefix:        expr_prefix factor addop 
-					{if($<treeNode>1 == nullptr) 
+					{if($<treeNode>1 == NULL) 
 					{$<treeNode>3->left = $<treeNode>2;} 
 					else 
 					{$<treeNode>1->right = $<treeNode>2; $<treeNode>3->left = $<treeNode>1;} 
 					$$ = $<treeNode>3;} 
-					| {$$ = nullptr;};
+					| {$$ = NULL;};
 factor:             factor_prefix postfix_expr 	
-					{if($1 == nullptr) 
+					{if($1 == NULL) 
 					{$$ = $<treeNode>2;} 
 					else 
 					{$<treeNode>1->right = $<treeNode>2; $$ = $<treeNode>1;}};
 factor_prefix:      factor_prefix postfix_expr mulop 
-					{if($1 == nullptr) 
+					{if($1 == NULL) 
 					{$<treeNode>3->left = $<treeNode>2;} 
 					else 
 					{$<treeNode>1->right = $<treeNode>2; $<treeNode>3->left = $<treeNode>1;} 
 					$$ = $<treeNode>3;} 
-					| {$$ = nullptr;};
-postfix_expr:       primary {$$ = $<treeNode>1;} | call_expr {$$ = nullptr;};
+					| {$$ = NULL;};
+postfix_expr:       primary {$$ = $<treeNode>1;} | call_expr {$$ = NULL;};
 call_expr:          id "(" expr_list ")";
 expr_list:          expr expr_list_tail | ;
 expr_list_tail:     "," expr expr_list_tail | ;
@@ -113,11 +115,11 @@ primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = myStack->t
 addop:              "+" {$$ = new ASTNode("+");} | "-" {$$ = new ASTNode("-");};
 mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 
-if_stmt:             {myStack->push(currTable); currTable = new table("Symbol table BLOCK " + std::to_string(scope)); scope++;} IF "(" cond ")" decl stmt_list else_part ENDIF;
-else_part:           {myStack->push(currTable); currTable = new table("Symbol table BLOCK " + std::to_string(scope)); scope++;} ELSE decl stmt_list | ;
+if_stmt:             {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} IF "(" cond ")" decl stmt_list else_part ENDIF;
+else_part:           {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} ELSE decl stmt_list | ;
 cond:                expr compop expr | TRUE | FALSE;
 compop:              "<" | ">" | "=" | "!=" | "<=" | ">=";
-while_stmt:          {myStack->push(currTable); currTable = new table("Symbol table BLOCK " + std::to_string(scope)); scope++;} WHILE "(" cond ")" decl stmt_list ENDWHILE;
+while_stmt:          {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} WHILE "(" cond ")" decl stmt_list ENDWHILE;
 
 control_stmt:        return_stmt;
 loop_stmt:           while_stmt;
