@@ -1,6 +1,7 @@
 %{
 	#include "ASTNode.h"
     #include <iostream>
+    #include <stdio.h>
     #include <string>
 	#include <list>
     #include "stack.h"
@@ -14,7 +15,7 @@
     extern int yylineno;
     extern char * yytext;
     void yyerror(const char * s) {
-        printf("Error Line %d token %s\n",yylineno,yytext);
+        //printf("Error Line %d token %s\n",yylineno,yytext);
     }
     
     stack* myStack = nullptr;

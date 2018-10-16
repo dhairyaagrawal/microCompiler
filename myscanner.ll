@@ -1,5 +1,4 @@
 %{
-#include <string>
 #include "ASTNode.h"
 #include "microParser.hpp"
 extern char* yytext;
