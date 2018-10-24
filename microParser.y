@@ -44,7 +44,7 @@
 %token  DEF ":=" ADD "+" SUB "-" MUL "*" DIV "/" EQ "=" NEQ "!=" LESS "<" GRET ">" LPAR "(" RPAR ")" SEMI ";" COM "," LEQ "<=" GEQ ">="
 
 %type <stringValue> id str var_type;
-%type <treeNode> addop mulop expr expr_prefix factor factor_prefix primary postfix_expr assign_expr assign_stmt;
+%type <treeNode> addop mulop expr expr_prefix factor factor_prefix primary postfix_expr assign_expr assign_stmt cond compop;
 
 %%
 program:  {myStack = new stack; currTable = new table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);}; 
@@ -118,8 +118,8 @@ mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 if_stmt:             {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} IF "(" cond ")" {$<treeNode>4->type = "IF"; listAST->push_back($<treeNode>4);} decl stmt_list else_part ENDIF {listAST->push_back(new ASTNode("end", "ENDIF");} ;
 else_part:           {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} ELSE {listAST->push_back(new ASTNode("else", "ELSE");} decl stmt_list | ;
 cond:                expr compop expr {$<treeNode>2->right = $<treeNode>3; $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;}
-					| TRUE	{$<treeNode>2->right = new ASTNode("TRUE"); $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;} 
-					| FALSE	{$<treeNode>2->right = new ASTNode("FALSE"); $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;};
+					| TRUE
+					| FALSE;
 compop:              "<" {$$ = new ASTNode("<");}
 					| ">" {$$ = new ASTNode(">");}
 					| "=" {$$ = new ASTNode("=");}
