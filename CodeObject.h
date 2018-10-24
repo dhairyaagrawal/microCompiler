@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include "IRNode.h"
 
 class CodeObject {
@@ -16,6 +17,9 @@ public:
     std::string result;
     std::string type;
     static int resultCt;
+	static int ifCt;
+	static int whileCt;
+	static vector<std::string> labels;
 };
 
 #endif /* CODEOBJECT_H_ */
