@@ -23,6 +23,7 @@ extern std::list<ASTNode*> * listAST;
 
 CodeObject* parseAST(ASTNode*);
 void generateASM(IRNode&, std::list<std::string>&);
+std::vector<std::string> labels;
 
 int main (int argc, char * argv[]) {
   int flag;
@@ -108,7 +109,11 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 	} else if(ircode.op == "DIVF") {
 		assembly.push_back("move " + ircode.src1 + " " + ircode.dest);
 		assembly.push_back("divr " + ircode.src2 + " " + ircode.dest);
-	}
+	} else if(ircode.op == "LABEL") {
+    assembly.push_back("label " + ircode.dest);
+  } else if(ircode.op == "JUMP") {
+    assembly.push_back("jmp " + ircode.dest);
+  }
 
 	return;
 }
@@ -130,20 +135,20 @@ CodeObject* parseAST(ASTNode* root) {
 		else if (root->op == "<=") cond = "LE";
 		else if (root->op == "!=") cond = "NE";
 		else if (root->op == "=") cond = "EQ";
-		else { cond = "Error" };
+		else { cond = "Error"; };
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
 
 		std::ostringstream os;
 		os << CodeObject::ifCt++;
-		CodeObject::labels.push_back("ELSE_" + os.str());
+		labels.push_back("ELSE_" + os.str());
 		tmp->IRseq.push_back(IRNode(cond, left->result, right->result, "ELSE_" + os.str()));
 		return tmp;
 	}
 	if (root->type == "ENDIF") {
 		CodeObject* tmp = new CodeObject();
-		tmp->IRseq.push_back(IRNode("LABEL", "", "", CodeObject::labels.back()));
-		CodeObject::labels.pop_back();
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", labels.back()));
+		labels.pop_back();
 		return tmp;
 	}
 	if (root->type == "ELSE") {
@@ -151,9 +156,9 @@ CodeObject* parseAST(ASTNode* root) {
 		std::ostringstream os;
 		os << CodeObject::ifCt++;
 		tmp->IRseq.push_back(IRNode("JUMP", "", "", "END_IF_ELSE" + os.str()));
-		tmp->IRseq.push_back(IRNode("LABEL", "", "", CodeObject::labels.back()));
-		CodeObject::labels.pop_back();
-		CodeObject::labels.push_back("END_IF_ELSE" + os.str());
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", labels.back()));
+		labels.pop_back();
+		labels.push_back("END_IF_ELSE" + os.str());
 		return tmp;
 	}
 	if (root->type == "WHILE") {
@@ -162,7 +167,6 @@ CodeObject* parseAST(ASTNode* root) {
 		std::ostringstream os;
 		os << CodeObject::whileCt++;
 		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_START_"+ os.str()));
-		CodeObject::labels.push_back("WHILE_START_" + os.str());
 
 		left = parseAST(root->left);
 		right = parseAST(root->right);
@@ -172,24 +176,26 @@ CodeObject* parseAST(ASTNode* root) {
 		else if (root->op == "<=") cond = "LE";
 		else if (root->op == "!=") cond = "NE";
 		else if (root->op == "=") cond = "EQ";
-		else { cond = "Error" };
+		else { cond = "Error"; };
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		
+
 		std::ostringstream ostr;
 		ostr << CodeObject::whileCt++;
 		tmp->IRseq.push_back(IRNode(cond, left->result, right->result, "WHILE_END_" + ostr.str()));
-		CodeObject::labels.push_back("WHILE_END_" + ostr.str());
+		labels.push_back("WHILE_END_" + ostr.str());
+    labels.push_back("WHILE_START_" + os.str());
 		return tmp;
 	}
 	if (root->type == "ENDWHILE") {
 		CodeObject* tmp = new CodeObject();
-		tmp->IRseq.push_back(IRNode("JUMP", "", "", CodeObject::labels.back()));
-		CodeObject::labels.pop_back();
-		tmp->IRseq.push_back(IRNode("LABEL", "", "", CodeObject::labels.back()));
-		CodeObject::labels.pop_back();
+		tmp->IRseq.push_back(IRNode("JUMP", "", "", labels.back()));
+		labels.pop_back();
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", labels.back()));
+		labels.pop_back();
 		return tmp;
 	}
+
 	if(root->type == "READ") {
 		CodeObject* tmp = new CodeObject();
 		ASTNode* idx = root->right;

@@ -2,8 +2,8 @@
 #include <iostream>
 
 int CodeObject::resultCt = 0;
-int CodeObject::ifCt = 0;
-int CodeObject::whileCt = 0;
+int CodeObject::ifCt = 1;
+int CodeObject::whileCt = 1;
 
 CodeObject::CodeObject() {}
 CodeObject::CodeObject(std::string res, std::string type_val) {
