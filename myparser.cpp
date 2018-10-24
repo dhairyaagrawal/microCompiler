@@ -58,14 +58,14 @@ int main (int argc, char * argv[]) {
 	  }
   }
 
-  for(std::list<IRNode>::iterator it=total->IRseq.begin();it!=total->IRseq.end();++it) {
+  /*for(std::list<IRNode>::iterator it=total->IRseq.begin();it!=total->IRseq.end();++it) {
 	  generateASM((*it), assembly);
   	  //assembly.splice(assembly.end(),tmpasm);
   }
 
   for(std::list<std::string>::iterator it=assembly.begin();it!=assembly.end();++it) {
 	  std::cout << (*it) << std::endl;
-  }
+  }*/
   std::cout << "sys halt" << std::endl;
   return 0;
 }
@@ -118,6 +118,38 @@ CodeObject* parseAST(ASTNode* root) {
 	CodeObject* left = NULL;
 	CodeObject* right = NULL;
 
+	if(root->type == "IF") {
+		CodeObject* tmp = new CodeObject();
+		left = parseAST(root->left);
+		right = parseAST(root->right);
+		tmp->IRseq.push_back(IRNode("cond", left->result, right->result, "ELSE_LABEL"));
+		return tmp;
+	}
+	if (root->type == "ENDIF") {
+		CodeObject* tmp = new CodeObject();
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", "End_Label"));
+		return tmp;
+	}
+	if (root->type == "ELSE") {
+		CodeObject* tmp = new CodeObject();
+		tmp->IRseq.push_back(IRNode("JUMP", "", "", "END_LABEL"));
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", "ELSE_LABEL"));
+		return tmp;
+	}
+	if (root->type == "WHILE") {
+		CodeObject* tmp = new CodeObject();
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_LABEL"));
+		left = parseAST(root->left);
+		right = parseAST(root->right);
+		tmp->IRseq.push_back(IRNode("cond", left->result, right->result, "WHILE_END_LABEL"));
+		return tmp;
+	}
+	if (root->type == "ENDWHILE") {
+		CodeObject* tmp = new CodeObject();
+		tmp->IRseq.push_back(IRNode("JUMP", "", "", "WHILE_LABEL"));
+		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_END_LABEL"));
+		return tmp;
+	}
 	if(root->type == "READ") {
 		CodeObject* tmp = new CodeObject();
 		ASTNode* idx = root->right;

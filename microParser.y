@@ -115,11 +115,18 @@ primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = myStack->t
 addop:              "+" {$$ = new ASTNode("+");} | "-" {$$ = new ASTNode("-");};
 mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 
-if_stmt:             {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} IF "(" cond ")" decl stmt_list else_part ENDIF;
-else_part:           {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} ELSE decl stmt_list | ;
-cond:                expr compop expr | TRUE | FALSE;
-compop:              "<" | ">" | "=" | "!=" | "<=" | ">=";
-while_stmt:          {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} WHILE "(" cond ")" decl stmt_list ENDWHILE;
+if_stmt:             {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} IF "(" cond ")" {$<treeNode>4->type = "IF"; listAST->push_back($<treeNode>4);} decl stmt_list else_part ENDIF {listAST->push_back(new ASTNode("end", "ENDIF");} ;
+else_part:           {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} ELSE {listAST->push_back(new ASTNode("else", "ELSE");} decl stmt_list | ;
+cond:                expr compop expr {$<treeNode>2->right = $<treeNode>3; $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;}
+					| TRUE	{$<treeNode>2->right = new ASTNode("TRUE"); $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;} 
+					| FALSE	{$<treeNode>2->right = new ASTNode("FALSE"); $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;};
+compop:              "<" {$$ = new ASTNode("<");}
+					| ">" {$$ = new ASTNode(">");}
+					| "=" {$$ = new ASTNode("=");}
+					| "!=" {$$ = new ASTNode("!=");}
+					| "<=" {$$ = new ASTNode("<=");}
+					| ">=" {$$ = new ASTNode(">=");};
+while_stmt:          {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} WHILE "(" cond ")" {$<treeNode>4->type = "WHILE"; listAST->push_back($<treeNode>4);} decl stmt_list ENDWHILE {listAST->push_back(new ASTNode("end", "ENDWHILE");} ;
 
 control_stmt:        return_stmt;
 loop_stmt:           while_stmt;
