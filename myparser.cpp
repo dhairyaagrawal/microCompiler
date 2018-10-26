@@ -60,14 +60,14 @@ int main (int argc, char * argv[]) {
 	  }
   }
 
-  /*for(std::list<IRNode>::iterator it=total->IRseq.begin();it!=total->IRseq.end();++it) {
+  for(std::list<IRNode>::iterator it=total->IRseq.begin();it!=total->IRseq.end();++it) {
 	  generateASM((*it), assembly);
   	  //assembly.splice(assembly.end(),tmpasm);
   }
 
   for(std::list<std::string>::iterator it=assembly.begin();it!=assembly.end();++it) {
 	  std::cout << (*it) << std::endl;
-  }*/
+  }
   std::cout << "sys halt" << std::endl;
   return 0;
 }
@@ -113,6 +113,42 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
     assembly.push_back("label " + ircode.dest);
   } else if(ircode.op == "JUMP") {
     assembly.push_back("jmp " + ircode.dest);
+  } else if(ircode.op == "GTI") {
+    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jle " + ircode.dest);
+  } else if(ircode.op == "GTF") {
+    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jle " + ircode.dest);
+  } else if(ircode.op == "GEI") {
+    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jlt " + ircode.dest);
+  } else if(ircode.op == "GEF") {
+    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jlt " + ircode.dest);
+  } else if(ircode.op == "LTI") {
+    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jge " + ircode.dest);
+  } else if(ircode.op == "LTF") {
+    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jge " + ircode.dest);
+  } else if(ircode.op == "LEI") {
+    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jgt " + ircode.dest);
+  } else if(ircode.op == "LEF") {
+    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jgt " + ircode.dest);
+  } else if(ircode.op == "NEI") {
+    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jeq " + ircode.dest);
+  } else if(ircode.op == "NEF") {
+    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jeq " + ircode.dest);
+  } else if(ircode.op == "EQI") {
+    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jne " + ircode.dest);
+  } else if(ircode.op == "EQF") {
+    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("jne " + ircode.dest);
   }
 
 	return;
@@ -129,20 +165,26 @@ CodeObject* parseAST(ASTNode* root) {
 		std::string cond;
 		left = parseAST(root->left);
 		right = parseAST(root->right);
-		if (root->op == ">") cond = "GT";
-		else if (root->op == ">=") cond = "GE";
-		else if (root->op == "<") cond = "LT";
-		else if (root->op == "<=") cond = "LE";
-		else if (root->op == "!=") cond = "NE";
-		else if (root->op == "=") cond = "EQ";
+		if (root->op == ">") { if(root->left->type == "INT") {cond = "GTI";} else if(root->left->type == "FLOAT") {cond = "GTF";} }
+		else if (root->op == ">=") { if(root->left->type == "INT") {cond = "GEI";} else if(root->left->type == "FLOAT") {cond = "GEF";} }
+		else if (root->op == "<") { if(root->left->type == "INT") {cond = "LTI";} else if(root->left->type == "FLOAT") {cond = "LTF";} }
+		else if (root->op == "<=") { if(root->left->type == "INT") {cond = "LEI";} else if(root->left->type == "FLOAT") {cond = "LEF";} }
+		else if (root->op == "!=") { if(root->left->type == "INT") {cond = "NEI";} else if(root->left->type == "FLOAT") {cond = "NEF";} }
+		else if (root->op == "=") { if(root->left->type == "INT") {cond = "EQI";} else if(root->left->type == "FLOAT") {cond = "EQF";} }
 		else { cond = "Error"; };
+
+    std::ostringstream os;
+		os << CodeObject::resultCt++;
+		std::string strtmp = "r"+ os.str();
+
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
 
-		std::ostringstream os;
-		os << CodeObject::ifCt++;
-		labels.push_back("ELSE_" + os.str());
-		tmp->IRseq.push_back(IRNode(cond, left->result, right->result, "ELSE_" + os.str()));
+		std::ostringstream ostmp;
+		ostmp << CodeObject::ifCt++;
+		labels.push_back("ELSE_" + ostmp.str());
+    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "ELSE_" + ostmp.str()));
 		return tmp;
 	}
 	if (root->type == "ENDIF") {
@@ -163,26 +205,33 @@ CodeObject* parseAST(ASTNode* root) {
 	}
 	if (root->type == "WHILE") {
 		CodeObject* tmp = new CodeObject();
+    left = parseAST(root->left);
+    right = parseAST(root->right);
+
 		std::string cond;
 		std::ostringstream os;
 		os << CodeObject::whileCt++;
+
+    std::ostringstream ostmp;
+    ostmp << CodeObject::resultCt++;
+    std::string strtmp = "r"+ ostmp.str();
+    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
 		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_START_"+ os.str()));
 
-		left = parseAST(root->left);
-		right = parseAST(root->right);
-		if (root->op == ">") cond = "GT";
-		else if (root->op == ">=") cond = "GE";
-		else if (root->op == "<") cond = "LT";
-		else if (root->op == "<=") cond = "LE";
-		else if (root->op == "!=") cond = "NE";
-		else if (root->op == "=") cond = "EQ";
+    if (root->op == ">") { if(root->left->type == "INT") {cond = "GTI";} else if(root->left->type == "FLOAT") {cond = "GTF";} }
+		else if (root->op == ">=") { if(root->left->type == "INT") {cond = "GEI";} else if(root->left->type == "FLOAT") {cond = "GEF";} }
+		else if (root->op == "<") { if(root->left->type == "INT") {cond = "LTI";} else if(root->left->type == "FLOAT") {cond = "LTF";} }
+		else if (root->op == "<=") { if(root->left->type == "INT") {cond = "LEI";} else if(root->left->type == "FLOAT") {cond = "LEF";} }
+		else if (root->op == "!=") { if(root->left->type == "INT") {cond = "NEI";} else if(root->left->type == "FLOAT") {cond = "NEF";} }
+		else if (root->op == "=") { if(root->left->type == "INT") {cond = "EQI";} else if(root->left->type == "FLOAT") {cond = "EQF";} }
 		else { cond = "Error"; };
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
 
 		std::ostringstream ostr;
 		ostr << CodeObject::whileCt++;
-		tmp->IRseq.push_back(IRNode(cond, left->result, right->result, "WHILE_END_" + ostr.str()));
+
+		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "WHILE_END_" + ostr.str()));
 		labels.push_back("WHILE_END_" + ostr.str());
     labels.push_back("WHILE_START_" + os.str());
 		return tmp;
