@@ -78,7 +78,7 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 	} else if(ircode.op == "READI") {
 		assembly.push_back("sys readi " + ircode.dest);
 	} else if(ircode.op == "READF") {
-		assembly.push_back("sys readf " + ircode.dest);
+		assembly.push_back("sys readr " + ircode.dest);
 	} else if(ircode.op == "WRITEI") {
 		assembly.push_back("sys writei " + ircode.src1);
 	} else if(ircode.op == "WRITEF") {
@@ -110,50 +110,49 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 		assembly.push_back("move " + ircode.src1 + " " + ircode.dest);
 		assembly.push_back("divr " + ircode.src2 + " " + ircode.dest);
 	} else if(ircode.op == "LABEL") {
-    assembly.push_back("label " + ircode.dest);
-  } else if(ircode.op == "JUMP") {
-    assembly.push_back("jmp " + ircode.dest);
-  } else if(ircode.op == "GTI") {
-    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jle " + ircode.dest);
-  } else if(ircode.op == "GTF") {
-    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jle " + ircode.dest);
-  } else if(ircode.op == "GEI") {
-    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jlt " + ircode.dest);
-  } else if(ircode.op == "GEF") {
-    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jlt " + ircode.dest);
-  } else if(ircode.op == "LTI") {
-    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jge " + ircode.dest);
-  } else if(ircode.op == "LTF") {
-    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jge " + ircode.dest);
-  } else if(ircode.op == "LEI") {
-    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jgt " + ircode.dest);
-  } else if(ircode.op == "LEF") {
-    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jgt " + ircode.dest);
-  } else if(ircode.op == "NEI") {
-    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jeq " + ircode.dest);
-  } else if(ircode.op == "NEF") {
-    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jeq " + ircode.dest);
-  } else if(ircode.op == "EQI") {
-    assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jne " + ircode.dest);
-  } else if(ircode.op == "EQF") {
-    assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("jne " + ircode.dest);
-  }
+		assembly.push_back("label " + ircode.dest);
+	} else if(ircode.op == "JUMP") {
+		assembly.push_back("jmp " + ircode.dest);
+	} else if(ircode.op == "GTI") {
+		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jle " + ircode.dest);
+	} else if(ircode.op == "GTF") {
+		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jle " + ircode.dest);
+	} else if(ircode.op == "GEI") {
+		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jlt " + ircode.dest);
+	} else if(ircode.op == "GEF") {
+		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jlt " + ircode.dest);
+	} else if(ircode.op == "LTI") {
+		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jge " + ircode.dest);
+	} else if(ircode.op == "LTF") {
+		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jge " + ircode.dest);
+	} else if(ircode.op == "LEI") {
+		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jgt " + ircode.dest);
+	} else if(ircode.op == "LEF") {
+		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jgt " + ircode.dest);
+	} else if(ircode.op == "NEI") {
+		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jeq " + ircode.dest);
+	} else if(ircode.op == "NEF") {
+		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jeq " + ircode.dest);
+	} else if(ircode.op == "EQI") {
+		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jne " + ircode.dest);
+	} else if(ircode.op == "EQF") {
+		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("jne " + ircode.dest);
+	}
 
 	return;
 }
-
 
 CodeObject* parseAST(ASTNode* root) {
 	//POST-ORDER WALK: left, right, root
@@ -183,7 +182,7 @@ CodeObject* parseAST(ASTNode* root) {
 		std::ostringstream ostmp;
 		ostmp << CodeObject::ifCt++;
 		labels.push_back("ELSE_" + ostmp.str());
-    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+        tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
 		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "ELSE_" + ostmp.str()));
 		return tmp;
 	}
@@ -205,17 +204,17 @@ CodeObject* parseAST(ASTNode* root) {
 	}
 	if (root->type == "WHILE") {
 		CodeObject* tmp = new CodeObject();
-    left = parseAST(root->left);
-    right = parseAST(root->right);
+        left = parseAST(root->left);
+        right = parseAST(root->right);
 
 		std::string cond;
 		std::ostringstream os;
 		os << CodeObject::whileCt++;
 
-    std::ostringstream ostmp;
-    ostmp << CodeObject::resultCt++;
-    std::string strtmp = "r"+ ostmp.str();
-    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+		std::ostringstream ostmp;
+		ostmp << CodeObject::resultCt++;
+		std::string strtmp = "r"+ ostmp.str();
+		tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
 		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_START_"+ os.str()));
 
     if (root->op == ">") { if(root->left->type == "INT") {cond = "GTI";} else if(root->left->type == "FLOAT") {cond = "GTF";} }
@@ -233,7 +232,7 @@ CodeObject* parseAST(ASTNode* root) {
 
 		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "WHILE_END_" + ostr.str()));
 		labels.push_back("WHILE_END_" + ostr.str());
-    labels.push_back("WHILE_START_" + os.str());
+		labels.push_back("WHILE_START_" + os.str());
 		return tmp;
 	}
 	if (root->type == "ENDWHILE") {
@@ -344,10 +343,15 @@ CodeObject* parseAST(ASTNode* root) {
 		tmp->result = left->result;
 		tmp->type = left->type;
 
+		std::ostringstream os;
+		os << CodeObject::resultCt++;
+		std::string tmpresult = "r"+ os.str();
 		if(tmp->type == "INT") {
-			tmp->IRseq.push_back(IRNode("STOREI",right->result, "", tmp->result));
+			tmp->IRseq.push_back(IRNode("STOREI",right->result, "", tmpresult));
+			tmp->IRseq.push_back(IRNode("STOREI",tmpresult, "", tmp->result));
 		} else if(tmp->type == "FLOAT") {
-			tmp->IRseq.push_back(IRNode("STOREF",right->result, "", tmp->result));
+			tmp->IRseq.push_back(IRNode("STOREF",right->result, "", tmpresult));
+			tmp->IRseq.push_back(IRNode("STOREF",tmpresult, "", tmp->result));
 		}
 		return tmp;
 	}
