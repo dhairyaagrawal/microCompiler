@@ -21,7 +21,7 @@ void table::add(table_entry* newEntry) {
 	for(int i = 0; i < entryCt; i++) {
 		if(newEntry->name == entries[i]->name) {
 			std::cout << "DECLARATION ERROR " + newEntry->name << std::endl;
-			//exit(1);
+			std::exit(1);
 		}
 	}
 	entries[entryCt++] = newEntry;
