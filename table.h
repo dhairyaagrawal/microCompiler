@@ -10,17 +10,21 @@
 
 #include "table_entry.h"
 #include <string>
+#include <vector>
 
 class table {
 public:
 	table(std::string);
 	virtual ~table();
 	void print_table();
-	void add(table_entry*);
+	//void add(table_entry*);
+	void add(&table_entry*);
 	std::string search(std::string);
+	std::string index(std::string);
 
-	table_entry* entries[1000];
-	int entryCt;
+	//table_entry* entries[1000];
+	std::vector<table_entry> entries;
+	int pos;
 	std::string title;
 };
 

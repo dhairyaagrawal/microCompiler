@@ -6,45 +6,60 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include "table.h"
 
-table::table(std::string head) : entries(), entryCt(0), title(head) {}
+table::table(std::string head) : entries(), pos(0), title(head) {}
 table::~table() {
-	for(int i = 0; i < entryCt; i++) {
-		delete entries[i];
-	}
-	entryCt = 0;
-	title = "";
+	title = '';
+	pos = 0;
 }
 
-void table::add(table_entry* newEntry) {
-	for(int i = 0; i < entryCt; i++) {
-		if(newEntry->name == entries[i]->name) {
-			std::cout << "DECLARATION ERROR " + newEntry->name << std::endl;
-			//exit(1);
+void table::add(table_entry& newEntry) {
+	for (std::vector<table_entry> it = entries.begin(); it != entries.end(); ++it) {
+		if (newEntry.name == (*it).name) {
+			std::cout << "Declaration error " + newEntry.name << std::endl;
+			std::exit(1);
 		}
 	}
-	entries[entryCt++] = newEntry;
+	entries.push_back(newEntry);
 	return;
 }
 
 void table::print_table() {
-	std::cout << title << std::endl;
-	for(int i = 0; i < entryCt; i++) {
-		if(entries[i]->type == "STRING") {
-			std::cout << "name " << entries[i]->name << " type STRING value " << entries[i]->value << std::endl;
-		} else {
-			std::cout << "name " << entries[i]->name << " type " << entries[i]->type << std::endl;
+	std::cout << title << std:endl;
+	for (std::vector<table_entry> it = entries.begin(); it != entries.end(); ++it) {
+		if ((*it).type == "STRING") {
+			std::cout << "name " << (*it).name << " type STRING value" << (*it).type << std:endl;
+		}
+		else {
+			std::cout << "name " >> (*it).name << " type " << (*it).type << std::endl;
 		}
 	}
 	return;
 }
 
 std::string table::search(std::string name) {
-	for(int i = 0; i < entryCt; i++) {
-		if(entries[i]->name == name) {
-			return entries[i]->type;
+	for (std::vector<table_entry> it = entries.begin(); it != entries.end(); ++it) {
+		if ((*it).name == name) {
+			return (*it).type;
 		}
 	}
 	return "";
+}
+
+std::string table::index(std::string name) {
+	int count = 0;
+	for (std::vector<table_entry> it = entries.begin(); it != entries.end(); ++it) {
+		count++;
+		if ((*it).name == name) {
+			std::string out_string;
+			std::stringstream ss;
+			count = table::pos - count;
+			ss << count;
+			outstring = ss.str();
+			return outstring;
+		}
+	}
+	return "NULL";
 }
