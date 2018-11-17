@@ -8,23 +8,18 @@
 #include "stack.h"
 
 stack::stack() : tables(), tableCt(0) {}
-stack::~stack() {
-	for(int i = 0; i < tableCt; i++) {
-		delete tables[i];
-	}
-	tableCt = 0;
-}
+stack::~stack() {tableCt = 0;}
 
-void stack::push(table* currTable) {
+void stack::push(table currTable) {
 	tables[tableCt++] = currTable;
 	return;
 }
 
-table* stack::pop() {
+table stack::pop() {
 	if(tableCt != 0) {
-		table* toRet = tables[--tableCt];
+		table toRet = tables[--tableCt];
 		return toRet;
 	} else {
-		return NULL;
+		return table();
 	}
 }

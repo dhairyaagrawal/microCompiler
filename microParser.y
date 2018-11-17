@@ -24,7 +24,8 @@
     std::string varType = "FLOAT";
     int scope = 1;
     int flag = 0;
-    table *currTable = NULL;
+    table currTable;
+    table& globalTable;
     ASTNode *tmpNode = NULL;
     ASTNode *listID = NULL;
     std::ostringstream os;
@@ -47,30 +48,30 @@
 %type <treeNode> addop mulop expr expr_prefix factor factor_prefix primary postfix_expr assign_expr assign_stmt cond compop;
 
 %%
-program:  {myStack = new stack; currTable = new table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);}; 
+program:  {myStack = new stack; globalTable = currTable = table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);}; 
 id:       IDENTIFIER {$$ = $<stringValue>1;};
 pgm_body: decl func_declarations;
 decl:     string_decl decl | var_decl decl | ;
 
-string_decl:  STRING id ":=" str ";" {currTable->add(new table_entry("STRING", ($<stringValue>2), ($<stringValue>4)));};
+string_decl:  STRING id ":=" str ";" {currTable.add(table_entry("STRING", ($<stringValue>2), ($<stringValue>4)));};
 str:          STRINGLITERAL {$$ = $<stringValue>1;};
 
 var_decl:   var_type {flag = 1;} id_list ";"
 var_type:   FLOAT {varType = "FLOAT";} | INT {varType = "INT";};
 any_type:   var_type | VOID;
-id_list:    id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>1), ""));}
-				else {varType = myStack->tables[0]->search($<stringValue>1); tmpNode->right = new ASTNode($<stringValue>1,varType); tmpNode = tmpNode->right;}} 
+id_list:    id {if(flag) {currTable.add(table_entry(varType, ($<stringValue>1), ""));}
+				else {varType = myStack->tables[0].search($<stringValue>1); tmpNode->right = new ASTNode($<stringValue>1,varType); tmpNode = tmpNode->right;}} 
 			id_tail;
-id_tail:    "," id {if(flag) {currTable->add(new table_entry(varType, ($<stringValue>2), ""));}
-					else {varType = myStack->tables[0]->search($<stringValue>2); tmpNode->right = new ASTNode($<stringValue>2,varType); tmpNode = tmpNode->right;}} 
+id_tail:    "," id {if(flag) {currTable.add(table_entry(varType, ($<stringValue>2), ""));}
+					else {varType = myStack->tables[0].search($<stringValue>2); tmpNode->right = new ASTNode($<stringValue>2,varType); tmpNode = tmpNode->right;}} 
 			id_tail | ;
 
 param_decl_list:    param_decl param_decl_tail | ;
-param_decl:         var_type id {currTable->add(new table_entry(($<stringValue>1), ($<stringValue>2), ""));};
+param_decl:         var_type id {currTable.add(table_entry(($<stringValue>1), ($<stringValue>2), ""));};
 param_decl_tail:    "," param_decl param_decl_tail | ;
 
 func_declarations:  func_decl func_declarations | ;
-func_decl:          FUNCTION any_type id {myStack->push(currTable); currTable = new table("Symbol table " + std::string($<stringValue>3));} "(" param_decl_list ")" BEG func_body END;
+func_decl:          FUNCTION any_type id {myStack->push(currTable); currTable = table("Symbol table " + std::string($<stringValue>3));} "(" param_decl_list ")" BEG func_body END;
 func_body:          decl stmt_list;
 
 stmt_list:          stmt stmt_list | ;
@@ -78,7 +79,7 @@ stmt:               base_stmt | if_stmt | loop_stmt;
 base_stmt:          assign_stmt | read_stmt | write_stmt | control_stmt;
 
 assign_stmt:        assign_expr {listAST->push_back($<treeNode>1);} ";";
-assign_expr:        id ":=" expr {varType = myStack->tables[0]->search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1,varType); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, NULL);};
+assign_expr:        id ":=" expr {varType = myStack->tables[0].search($<stringValue>1); tmpNode = new ASTNode($<stringValue>1,varType); $$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, NULL);};
 read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" id_list ")" ";" {listAST->push_back(listID);};
 write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
 return_stmt:        RETURN expr ";";
@@ -111,22 +112,22 @@ postfix_expr:       primary {$$ = $<treeNode>1;} | call_expr {$$ = NULL;};
 call_expr:          id "(" expr_list ")";
 expr_list:          expr expr_list_tail | ;
 expr_list_tail:     "," expr expr_list_tail | ;
-primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = myStack->tables[0]->search($<stringValue>1); $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
+primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = myStack->tables[0].search($<stringValue>1); $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
 addop:              "+" {$$ = new ASTNode("+");} | "-" {$$ = new ASTNode("-");};
 mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 
-if_stmt:             {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} IF "(" cond ")" {$<treeNode>4->type = "IF"; listAST->push_back($<treeNode>4);} decl stmt_list else_part ENDIF {listAST->push_back(new ASTNode("end", "ENDIF"));} ;
-else_part:           {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} ELSE {listAST->push_back(new ASTNode("else", "ELSE"));} decl stmt_list | ;
+if_stmt:             {myStack->push(currTable); os.str(""); os << scope++; currTable = table("Symbol table BLOCK " + os.str());} IF "(" cond ")" {$<treeNode>4->type = "IF"; listAST->push_back($<treeNode>4);} decl stmt_list else_part ENDIF {listAST->push_back(new ASTNode("end", "ENDIF"));} ;
+else_part:           {myStack->push(currTable); os.str(""); os << scope++; currTable = table("Symbol table BLOCK " + os.str());} ELSE {listAST->push_back(new ASTNode("else", "ELSE"));} decl stmt_list | ;
 cond:                expr compop expr {$<treeNode>2->right = $<treeNode>3; $<treeNode>2->left = $<treeNode>1; $$ = $<treeNode>2;}
-					| TRUE
-					| FALSE;
+					| TRUE {$$ = NULL;}
+					| FALSE {$$ = NULL;};
 compop:              "<" {$$ = new ASTNode("<");}
 					| ">" {$$ = new ASTNode(">");}
 					| "=" {$$ = new ASTNode("=");}
 					| "!=" {$$ = new ASTNode("!=");}
 					| "<=" {$$ = new ASTNode("<=");}
 					| ">=" {$$ = new ASTNode(">=");};
-while_stmt:          {myStack->push(currTable); os.str(""); os << scope++; currTable = new table("Symbol table BLOCK " + os.str());} WHILE "(" cond ")" {$<treeNode>4->type = "WHILE"; listAST->push_back($<treeNode>4);} decl stmt_list ENDWHILE {listAST->push_back(new ASTNode("end", "ENDWHILE"));} ;
+while_stmt:          {myStack->push(currTable); os.str(""); os << scope++; currTable = table("Symbol table BLOCK " + os.str());} WHILE "(" cond ")" {$<treeNode>4->type = "WHILE"; listAST->push_back($<treeNode>4);} decl stmt_list ENDWHILE {listAST->push_back(new ASTNode("end", "ENDWHILE"));} ;
 
 control_stmt:        return_stmt;
 loop_stmt:           while_stmt;

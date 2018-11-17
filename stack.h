@@ -14,10 +14,10 @@ class stack {
 public:
 	stack();
 	virtual ~stack();
-	void push(table*);
-	table* pop();
+	void push(table);
+	table pop();
 
-	table* tables[1000];
+	table tables[1000];
 	int tableCt;
 };
 

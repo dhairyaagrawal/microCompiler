@@ -49,14 +49,14 @@ int main (int argc, char * argv[]) {
   total->print(); //prints IR
 
   std::list<std::string> assembly; //stores assembly code as list of lines
-  table* globalTable = myStack->tables[0]; //global scope variables only for step4
-  for(int i = 0; i < globalTable->entryCt; i++) {
-	  if(globalTable->entries[i]->type == "INT" || globalTable->entries[i]->type == "FLOAT") {
-		  assembly.push_back("var " + globalTable->entries[i]->name);
-		  //std::cout << "var " << globalTable->entries[i]->name << std::endl;
-	  } else if(globalTable->entries[i]->type == "STRING") {
-		  assembly.push_back("str " + globalTable->entries[i]->name + " " + globalTable->entries[i]->value);
-		  //std::cout << "str " << globalTable->entries[i]->name << " " << globalTable->entries[i]->value << std::endl;
+  table globalTable = myStack->tables[0]; //global scope variables only for step4
+  for(int i = 0; i < globalTable.entries.size(); i++) {
+	  if(globalTable.entries[i].type == "INT" || globalTable.entries[i].type == "FLOAT") {
+		  assembly.push_back("var " + globalTable.entries[i].name);
+		  //std::cout << "var " << globalTable.entries[i]->name << std::endl;
+	  } else if(globalTable.entries[i].type == "STRING") {
+		  assembly.push_back("str " + globalTable.entries[i].name + " " + globalTable.entries[i].value);
+		  //std::cout << "str " << globalTable.entries[i]->name << " " << globalTable.entries[i]->value << std::endl;
 	  }
   }
 

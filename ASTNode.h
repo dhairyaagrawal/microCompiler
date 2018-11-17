@@ -2,13 +2,13 @@
 #define ASTNODE_H_
 
 #include <string>
-#include "table_entry.h"
+#include "table.h"
 
 class ASTNode {
 public:
     ASTNode(std::string);
     ASTNode(std::string, std::string);
-    ASTNode(ASTNode*, ASTNode*, std::string, std::string, table_entry*);
+    ASTNode(ASTNode*, ASTNode*, std::string, std::string, table*);
     virtual ~ASTNode();
     virtual void print();
 
@@ -16,7 +16,7 @@ public:
     ASTNode * right;
     std::string op;
     std::string type;
-    table_entry * entryPt;
+    table* entryPt;
 };
 
 #endif /* ASTNODE_H_ */
