@@ -53,8 +53,11 @@ std::string table::index(std::string name) {
 		if ((*it).name == name) {
 			std::stringstream ss;
 			count = table::pos - count;
+			if(count >= 0) {
+				count++;
+			}
 			ss << count;
-			return ss.str();
+			return "$" +ss.str();
 		}
 	}
 	return "";

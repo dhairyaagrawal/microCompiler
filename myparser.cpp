@@ -24,6 +24,8 @@ extern std::list<ASTNode*> * listAST;
 CodeObject* parseAST(ASTNode*);
 void generateASM(IRNode&, std::list<std::string>&);
 std::vector<std::string> labels;
+std::vector<std::string> args;
+int pop_count = 0;
 
 int main (int argc, char * argv[]) {
   int flag;
@@ -46,6 +48,7 @@ int main (int argc, char * argv[]) {
 	  CodeObject* ircode = parseAST(*it);
 	  total->IRseq.splice(total->IRseq.end(),ircode->IRseq);
   }
+
   total->print(); //prints IR
 
   std::list<std::string> assembly; //stores assembly code as list of lines
@@ -159,6 +162,71 @@ CodeObject* parseAST(ASTNode* root) {
 	CodeObject* left = NULL;
 	CodeObject* right = NULL;
 
+  std::cout << root->op << std::endl;
+
+  if(root->type == "PUSHREGS") {
+    CodeObject* tmp = new CodeObject();
+    tmp->IRseq.push_back(IRNode("PUSH", "", "", ""));
+    tmp->IRseq.push_back(IRNode("PUSHREGS", "", "", ""));
+    return tmp;
+  }
+  if(root->type == "ARG") {
+    CodeObject* tmp = new CodeObject();
+    right = parseAST(root->right);
+    tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
+    tmp->IRseq.push_back(IRNode("PUSH", "", "", right->result));
+    return tmp;
+  }
+  if(root->type == "FUNC") {
+    CodeObject* tmp = new CodeObject();
+    tmp->IRseq.push_back(IRNode("LABEL", "", "", "FUNC_" + root->op));
+    return tmp;
+  }
+  if(root->op == "POP") {
+    CodeObject* tmp = new CodeObject();
+    left = parseAST(root->left);
+    right = parseAST(root->right);
+
+    tmp->IRseq.push_back(IRNode("FUNC", "", "", "LABEL_" + right->result));
+    while(pop_count != 0) {
+      tmp->IRseq.push_back(IRNode("POP", "", "", ""));
+      pop_count--;
+    }
+    tmp->IRseq.push_back(IRNode("POPREGS", "", "", ""));
+
+    std::ostringstream os;
+    os << CodeObject::resultCt++;
+    tmp->result = "r"+ os.str();
+    std::cout << "hello" << std::endl;
+    tmp->IRseq.push_back(IRNode("RTV", tmp->result, left->result, ""));
+    return tmp;
+  }
+  if(root->type == "LINK") {
+    CodeObject* tmp = new CodeObject();
+    tmp->IRseq.push_back(IRNode("LINK", "", "", root->op));
+    return tmp;
+  }
+  if(root->type == "END") {
+    CodeObject* tmp = new CodeObject();
+    tmp->IRseq.push_back(IRNode("END_RETURN", "", "", ""));
+    return tmp;
+  }
+  if(root->type == "RETURN") {
+    CodeObject* tmp = new CodeObject();
+    right = parseAST(root->right);
+    tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
+    std::string value;
+    if(root->op == "6") {
+      value = "0";
+      tmp->IRseq.push_back(IRNode("END_RETURN", "", "", ""));
+    }
+    else {
+      value = root->op;
+      tmp->IRseq.push_back(IRNode("RETURN", right->result, "", value));
+      tmp->IRseq.push_back(IRNode("END_RETURN", "", "", ""));
+    }
+    return tmp;
+  }
 	if(root->type == "IF") {
 		CodeObject* tmp = new CodeObject();
 		std::string cond;
@@ -361,3 +429,4 @@ CodeObject* parseAST(ASTNode* root) {
 
 //To Delete list<A*> *listA
 //while(!listA->empty()) delete listA->front(), listA->pop_front();
+//{myStack->push(currTable); os.str(""); os << scope++; currTable = table("Symbol table BLOCK " + os.str());}
