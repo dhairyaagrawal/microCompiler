@@ -5,6 +5,7 @@
 #include <cstring>
 #include <list>
 #include <vector>
+#include <deque>
 #include "stack.h"
 #include "table.h"
 #include "ASTNode.h"
@@ -24,7 +25,7 @@ extern std::list<ASTNode*> * listAST;
 CodeObject* parseAST(ASTNode*);
 void generateASM(IRNode&, std::list<std::string>&);
 std::vector<std::string> labels;
-std::vector<std::string> args;
+std::deque<std::string> args;
 int pop_count = 0;
 
 int main (int argc, char * argv[]) {
@@ -168,13 +169,19 @@ CodeObject* parseAST(ASTNode* root) {
     CodeObject* tmp = new CodeObject();
     tmp->IRseq.push_back(IRNode("PUSH", "", "", ""));
     tmp->IRseq.push_back(IRNode("PUSHREGS", "", "", ""));
+    while(!args.empty()) {
+      tmp->IRseq.push_back(IRNode("PUSHREG", "", "", args.front()));
+      args.pop_front();
+    }
     return tmp;
   }
   if(root->type == "ARG") {
     CodeObject* tmp = new CodeObject();
     right = parseAST(root->right);
     tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-    tmp->IRseq.push_back(IRNode("PUSH", "", "", right->result));
+    args.push_back(right->result);
+    pop_count++;
+    //tmp->IRseq.push_back(IRNode("PUSH", "", "", right->result));
     return tmp;
   }
   if(root->type == "FUNC") {
@@ -187,7 +194,7 @@ CodeObject* parseAST(ASTNode* root) {
     left = parseAST(root->left);
     right = parseAST(root->right);
 
-    tmp->IRseq.push_back(IRNode("FUNC", "", "", "LABEL_" + right->result));
+    tmp->IRseq.push_back(IRNode("FUNC", "", "", "FUNC_" + right->result));
     while(pop_count != 0) {
       tmp->IRseq.push_back(IRNode("POP", "", "", ""));
       pop_count--;
