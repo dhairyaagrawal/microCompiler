@@ -163,15 +163,15 @@ CodeObject* parseAST(ASTNode* root) {
 	CodeObject* left = NULL;
 	CodeObject* right = NULL;
 
-  std::cout << root->op << std::endl;
+  //std::cout << root->op << std::endl;
 
   if(root->type == "PUSHREGS") {
     CodeObject* tmp = new CodeObject();
-    tmp->IRseq.push_back(IRNode("PUSH", "", "", ""));
-    tmp->IRseq.push_back(IRNode("PUSHREGS", "", "", ""));
+    tmp->IRseq.push_back(IRNode("PUSH", "", "", "")); //just a push
+    tmp->IRseq.push_back(IRNode("PUSHREGS", "", "", "")); //PUSH r0, r1, r2, r3
     while(!args.empty()) {
-      tmp->IRseq.push_back(IRNode("PUSHREG", "", "", args.front()));
-      args.pop_front();
+      tmp->IRseq.push_back(IRNode("PUSHREG", "", "", args.front())); //PUSH irnode.dest
+      args.pop_front(); //using a deque for args instead of vector
     }
     return tmp;
   }
@@ -181,12 +181,11 @@ CodeObject* parseAST(ASTNode* root) {
     tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
     args.push_back(right->result);
     pop_count++;
-    //tmp->IRseq.push_back(IRNode("PUSH", "", "", right->result));
     return tmp;
   }
   if(root->type == "FUNC") {
     CodeObject* tmp = new CodeObject();
-    tmp->IRseq.push_back(IRNode("LABEL", "", "", "FUNC_" + root->op));
+    tmp->IRseq.push_back(IRNode("LABEL", "", "", "FUNC_" + root->op)); //already have this
     return tmp;
   }
   if(root->op == "POP") {
@@ -194,17 +193,17 @@ CodeObject* parseAST(ASTNode* root) {
     left = parseAST(root->left);
     right = parseAST(root->right);
 
-    tmp->IRseq.push_back(IRNode("FUNC", "", "", "FUNC_" + right->result));
+    tmp->IRseq.push_back(IRNode("FUNC", "", "", "FUNC_" + right->result)); //jsr to FUNC_(right->result)
     while(pop_count != 0) {
-      tmp->IRseq.push_back(IRNode("POP", "", "", ""));
+      tmp->IRseq.push_back(IRNode("POP", "", "", "")); //just a pop
       pop_count--;
     }
-    tmp->IRseq.push_back(IRNode("POPREGS", "", "", ""));
+    tmp->IRseq.push_back(IRNode("POPREGS", "", "", "")); //Pop r3, r2, r1, r0
 
     std::ostringstream os;
     os << CodeObject::resultCt++;
     tmp->result = "r"+ os.str();
-    tmp->IRseq.push_back(IRNode("RTV", tmp->result, left->result, ""));
+    tmp->IRseq.push_back(IRNode("RTV", tmp->result, left->result, "")); //store tmp->result into left->result; tmp->result is new register with popped return value
     return tmp;
   }
   if(root->type == "LINK") {
@@ -214,7 +213,7 @@ CodeObject* parseAST(ASTNode* root) {
   }
   if(root->type == "END") {
     CodeObject* tmp = new CodeObject();
-    tmp->IRseq.push_back(IRNode("END_RETURN", "", "", ""));
+    tmp->IRseq.push_back(IRNode("END_RETURN", "", "", "")); //unlink return
     return tmp;
   }
   if(root->type == "RETURN") {
@@ -223,16 +222,15 @@ CodeObject* parseAST(ASTNode* root) {
     tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
     std::string value;
     if(root->op == "6") {
-      value = "0";
-      tmp->IRseq.push_back(IRNode("END_RETURN", "", "", ""));
+      tmp->IRseq.push_back(IRNode("END_RETURN", "", "", "")); //unlink return; return 0 is end of main; "6" means "0" + 6 in grammar file
     }
     else {
       value = root->op;
-      tmp->IRseq.push_back(IRNode("RETURN", right->result, "", value));
-      tmp->IRseq.push_back(IRNode("END_RETURN", "", "", ""));
+      tmp->IRseq.push_back(IRNode("RETURN", right->result, "", value)); //We want to store right->result into value in Assembly to put it on the stack
+      tmp->IRseq.push_back(IRNode("END_RETURN", "", "", "")); //unlink return
     }
     return tmp;
-  }
+    }
 	if(root->type == "IF") {
 		CodeObject* tmp = new CodeObject();
 		std::string cond;
