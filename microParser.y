@@ -91,7 +91,7 @@ assign_expr:        id ":=" expr
 					} ;
 read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" id_list ")" ";" {listAST->push_back(listID);};
 write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
-return_stmt:        RETURN expr ";" {std::stringstream ss; ss << currTable.pos + 6; tmpNode = new ASTNode("RETURN " + ss.str(), "RETURN"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} ;
+return_stmt:        RETURN expr ";" {std::stringstream ss; ss << currTable.pos + 6; tmpNode = new ASTNode(ss.str(), "RETURN"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} ;
 
 expr:               expr_prefix factor
 					{if($<treeNode>1 == NULL)
