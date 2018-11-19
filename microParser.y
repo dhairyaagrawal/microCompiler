@@ -82,7 +82,7 @@ base_stmt:          assign_stmt | read_stmt | write_stmt | control_stmt;
 assign_stmt:        assign_expr {listAST->push_back($<treeNode>1);} ";";
 assign_expr:        id ":=" expr
 					{
-					varType = currTable.search($<stringValue>1);
+					varType = currTable.search_Stack($<stringValue>1);
 					tmpNode = new ASTNode($<stringValue>1,varType);
 					if($<treeNode>3->type == "PP"){
 					$$ = new ASTNode(tmpNode, $<treeNode>3, "POP", varType, NULL);
@@ -121,7 +121,7 @@ postfix_expr:       primary {$$ = $<treeNode>1;} | call_expr {$$ = $<treeNode>1;
 call_expr:          id "(" expr_list ")" {listAST->push_back(new ASTNode("PUSHREGS", "PUSHREGS")); $$ = new ASTNode($<stringValue>1, "PP");};
 expr_list:          expr {tmpNode = new ASTNode("ARG", "ARG"); tmpNode->right = $<treeNode>1; listAST->push_back(tmpNode);} expr_list_tail | {$$ = NULL;} ;
 expr_list_tail:     "," expr {tmpNode = new ASTNode("ARG", "ARG"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} expr_list_tail  | {$$ = NULL;} ;
-primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = currTable.search($<stringValue>1); $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
+primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = currTable.search_Stack($<stringValue>1); $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
 addop:              "+" {$$ = new ASTNode("+");} | "-" {$$ = new ASTNode("-");};
 mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 

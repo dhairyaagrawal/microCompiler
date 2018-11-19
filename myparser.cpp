@@ -197,7 +197,6 @@ CodeObject* parseAST(ASTNode* root) {
     std::ostringstream os;
     os << CodeObject::resultCt++;
     tmp->result = "r"+ os.str();
-    std::cout << "hello" << std::endl;
     tmp->IRseq.push_back(IRNode("RTV", tmp->result, left->result, ""));
     return tmp;
   }

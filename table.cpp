@@ -46,6 +46,19 @@ std::string table::search(std::string name) {
 	return "";
 }
 
+std::string table::search_Stack(std::string name) {
+	std::string token = name.substr(1, name.length());
+	int stack_num = stoi(token);
+	int index = 0;
+	if(stack_num > 0) {
+		index = stack_num - 1;
+	} else {
+		int temp = stack_num * -1;
+		index = temp + table::pos - 1;
+	}
+	return table::entries[index].type;
+}
+
 std::string table::index(std::string name) {
 	int count = 0;
 	for (std::vector<table_entry>::iterator it = entries.begin(); it != entries.end(); ++it) {

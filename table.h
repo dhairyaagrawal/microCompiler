@@ -21,6 +21,7 @@ public:
 	void add(table_entry);
 	std::string search(std::string);
 	std::string index(std::string);
+	std::string search_Stack(std::string name);
 
 	std::vector<table_entry> entries;
 	int pos;
