@@ -25,6 +25,7 @@
     int scope = 1;
     int flag = 0;
 		int decl = 1;
+		int io_flag = 0;
     table currTable;
     table globalTable;
     ASTNode *tmpNode = NULL;
@@ -50,7 +51,7 @@
 
 %%
 program:  {myStack = new stack; globalTable = currTable = table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);};
-id:       IDENTIFIER {if(!decl) {std::string s = currTable.index($<stringValue>1); if(s == "") {$$ = $<stringValue>1;} else {$$ = strdup(s.c_str());}} else {$$ = $<stringValue>1;}} ;
+id:       IDENTIFIER {if(io_flag) {$$ = $<stringValue>1;} else {if(!decl) {std::string s = currTable.index($<stringValue>1); if(s == "") {$$ = $<stringValue>1;} else {$$ = strdup(s.c_str());}} else {$$ = $<stringValue>1;}}} ;
 pgm_body: decl func_declarations;
 decl:     string_decl decl | var_decl decl | ;
 
@@ -61,10 +62,16 @@ var_decl:   var_type {flag = 1;} id_list ";"
 var_type:   FLOAT {varType = "FLOAT";} | INT {varType = "INT";};
 any_type:   var_type | VOID;
 id_list:    id {if(flag) {currTable.add(table_entry(varType, ($<stringValue>1), ""));}
-				else {varType = currTable.search($<stringValue>1); tmpNode->right = new ASTNode($<stringValue>1,varType); tmpNode = tmpNode->right;}}
+				else {varType = currTable.search($<stringValue>1);
+				if(varType == "") {varType = "STRING";}
+				std::string s = currTable.index($<stringValue>1); if(s == "") {s = $<stringValue>1;}
+				tmpNode->right = new ASTNode(s,varType); tmpNode = tmpNode->right;}}
 			id_tail;
 id_tail:    "," id {if(flag) {currTable.add(table_entry(varType, ($<stringValue>2), ""));}
-					else {varType = currTable.search($<stringValue>2); tmpNode->right = new ASTNode($<stringValue>2,varType); tmpNode = tmpNode->right;}}
+					else {varType = currTable.search($<stringValue>2);
+					if(varType == "") {varType = "STRING";}
+					std::string s = currTable.index($<stringValue>2); if(s == "") {s = $<stringValue>2;}
+					tmpNode->right = new ASTNode(s,varType); tmpNode = tmpNode->right;}}
 			id_tail | ;
 
 param_decl_list:    param_decl param_decl_tail | ;
@@ -73,7 +80,7 @@ param_decl_tail:    "," param_decl param_decl_tail | ;
 
 func_declarations:  func_decl func_declarations | ;
 func_decl:          FUNCTION {decl = 1;} any_type id {listAST->push_back(new ASTNode($<stringValue>4, "FUNC")); myStack->push(currTable); currTable = table("Symbol table " + std::string($<stringValue>4));} "(" param_decl_list ")" {currTable.pos = currTable.entries.size();} BEG func_body END {listAST->push_back(new ASTNode("END", "END"));} ;
-func_body:          decl {decl = 0; std::stringstream os; os << (currTable.entries.size() - currTable.pos); listAST->push_back(new ASTNode("LINK " + os.str(), "LINK"));} stmt_list;
+func_body:          decl {decl = 0; std::stringstream os; os << (currTable.entries.size() - currTable.pos); listAST->push_back(new ASTNode(os.str(), "LINK"));} stmt_list;
 
 stmt_list:          stmt stmt_list | ;
 stmt:               base_stmt | if_stmt | loop_stmt;
@@ -89,8 +96,8 @@ assign_expr:        id ":=" expr
 					} else {
 					$$ = new ASTNode(tmpNode, $<treeNode>3, ":=", varType, NULL);}
 					} ;
-read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" id_list ")" ";" {listAST->push_back(listID);};
-write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" id_list ")" ";" {listAST->push_back(listID);};
+read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" {io_flag = 1;} id_list {io_flag = 0;} ")" ";" {listAST->push_back(listID);};
+write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" {io_flag = 1;} id_list {io_flag = 0;} ")" ";" {listAST->push_back(listID);};
 return_stmt:        RETURN expr ";" {std::stringstream ss; ss << currTable.pos + 6; tmpNode = new ASTNode(ss.str(), "RETURN"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} ;
 
 expr:               expr_prefix factor

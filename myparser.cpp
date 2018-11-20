@@ -64,6 +64,15 @@ int main (int argc, char * argv[]) {
 	  }
   }
 
+  assembly.push_back("push");
+  assembly.push_back("push r0");
+  assembly.push_back("push r1");
+  assembly.push_back("push r2");
+  assembly.push_back("push r3");
+  assembly.push_back("jsr FUNC_main");
+  assembly.push_back("sys halt");
+
+
   for(std::list<IRNode>::iterator it=total->IRseq.begin();it!=total->IRseq.end();++it) {
 	  generateASM((*it), assembly);
   	  //assembly.splice(assembly.end(),tmpasm);
@@ -72,7 +81,6 @@ int main (int argc, char * argv[]) {
   for(std::list<std::string>::iterator it=assembly.begin();it!=assembly.end();++it) {
 	  std::cout << (*it) << std::endl;
   }
-  std::cout << "sys halt" << std::endl;
   return 0;
 }
 
@@ -153,8 +161,36 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 	} else if(ircode.op == "EQF") {
 		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
 		assembly.push_back("jne " + ircode.dest);
-	}
-
+	} else if(ircode.op == "LINK") {
+    assembly.push_back("link " + ircode.dest);
+  } else if(ircode.op == "PUSHREGS") {
+    assembly.push_back("push r0");
+    assembly.push_back("push r1");
+    assembly.push_back("push r2");
+    assembly.push_back("push r3");
+  } else if(ircode.op == "PUSH") {
+    assembly.push_back("push");
+  } else if(ircode.op == "PUSHREG") {
+    assembly.push_back("push " + ircode.dest);
+  } else if(ircode.op == "POP") {
+    assembly.push_back("pop");
+  } else if(ircode.op == "POPREGS") {
+    assembly.push_back("pop r3");
+    assembly.push_back("pop r2");
+    assembly.push_back("pop r1");
+    assembly.push_back("pop r0");
+  } else if(ircode.op == "FUNC") {
+    assembly.push_back("jsr " + ircode.dest);
+  } else if(ircode.op == "END_RETURN") {
+    assembly.push_back("unlnk");
+    assembly.push_back("ret");
+  } else if(ircode.op == "RTV") {
+    assembly.push_back("pop " + ircode.src1);
+    assembly.push_back("move " + ircode.src1 + " " + ircode.src2);
+  } else if(ircode.op == "RETURN") {
+    assembly.push_back("move " + ircode.src1 + " " + ircode.src2);
+    assembly.push_back("move " + ircode.src2 + " $" + ircode.dest);
+  }
 	return;
 }
 
@@ -226,7 +262,10 @@ CodeObject* parseAST(ASTNode* root) {
     }
     else {
       value = root->op;
-      tmp->IRseq.push_back(IRNode("RETURN", right->result, "", value)); //We want to store right->result into value in Assembly to put it on the stack
+      std::ostringstream os;
+      os << CodeObject::resultCt++;
+      tmp->result = "r"+ os.str();
+      tmp->IRseq.push_back(IRNode("RETURN", right->result, tmp->result, value)); //We want to store right->result into value in Assembly to put it on the stack
       tmp->IRseq.push_back(IRNode("END_RETURN", "", "", "")); //unlink return
     }
     return tmp;

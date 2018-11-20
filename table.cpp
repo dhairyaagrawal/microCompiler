@@ -67,7 +67,7 @@ std::string table::index(std::string name) {
 			std::stringstream ss;
 			count = table::pos - count;
 			if(count >= 0) {
-				count++;
+				count = count + 2;
 			}
 			ss << count;
 			return "$" +ss.str();
