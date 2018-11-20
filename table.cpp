@@ -13,10 +13,17 @@ table::table() {pos = 0; title = "";}
 table::table(std::string head) : entries(), pos(0), title(head) {}
 table::~table() {}
 
+<<<<<<< HEAD
 void table::add(table_entry newEntry) {
 	for (std::vector<table_entry>::iterator it = entries.begin(); it != entries.end(); ++it) {
 		if (newEntry.name == (*it).name) {
 			std::cout << "Declaration error " + newEntry.name << std::endl;
+=======
+void table::add(table_entry* newEntry) {
+	for(int i = 0; i < entryCt; i++) {
+		if(newEntry->name == entries[i]->name) {
+			std::cout << "DECLARATION ERROR " + newEntry->name << std::endl;
+>>>>>>> d31af7eeef6050c9b774ccfe8be1a7dd36c94fc2
 			std::exit(1);
 		}
 	}
