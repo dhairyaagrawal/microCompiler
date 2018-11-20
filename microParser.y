@@ -3,7 +3,9 @@
     #include <iostream>
     #include <sstream>
     #include <stdio.h>
-    #include <string>
+	#include <cstdlib>
+	#include <string.h>
+	#include <string>
 	#include <list>
     #include "stack.h"
     #include "table.h"
@@ -51,7 +53,7 @@
 
 %%
 program:  {myStack = new stack; globalTable = currTable = table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);};
-id:       IDENTIFIER {if(io_flag) {$$ = $<stringValue>1;} else {if(!decl) {std::string s = currTable.index($<stringValue>1); if(s == "") {$$ = $<stringValue>1;} else {$$ = strdup(s.c_str());}} else {$$ = $<stringValue>1;}}} ;
+id:       IDENTIFIER {if(io_flag) {$$ = $<stringValue>1;} else {if(!decl) {std::string s = currTable.index($<stringValue>1); if(s == "") {$$ = $<stringValue>1;} else {$$ = (strdup(s.c_str()));}} else {$$ = $<stringValue>1;}}} ;
 pgm_body: decl func_declarations;
 decl:     string_decl decl | var_decl decl | ;
 

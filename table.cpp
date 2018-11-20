@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include "table.h"
+#include <cstdlib>
 
 table::table() {pos = 0; title = "";}
 table::table(std::string head) : entries(), pos(0), title(head) {}
@@ -48,7 +49,7 @@ std::string table::search(std::string name) {
 
 std::string table::search_Stack(std::string name) {
 	std::string token = name.substr(1, name.length());
-	int stack_num = stoi(token);
+	int stack_num = atoi(token.c_str());
 	int index = 0;
 	if(stack_num > 0) {
 		index = stack_num - 1;
