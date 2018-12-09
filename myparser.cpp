@@ -54,7 +54,7 @@ int main (int argc, char * argv[]) {
 	  total->IRseq.splice(total->IRseq.end(),ircode->IRseq);
   }
 
-  //total->print(); //prints IR
+  total->print(); //prints IR
 
   std::list<std::string> assembly; //stores assembly code as list of lines
   table globalTable = myStack->tables[0]; //global scope variables only for step4
@@ -279,12 +279,12 @@ CodeObject* parseAST(ASTNode* root) {
 		std::string cond;
 		left = parseAST(root->left);
 		right = parseAST(root->right);
-		if (root->op == ">") { if(root->right->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT") {cond = "GTF";} }
-		else if (root->op == ">=") { if(root->right->type == "INT") {cond = "GEI";} else if(root->right->type == "FLOAT") {cond = "GEF";} }
-		else if (root->op == "<") { if(root->right->type == "INT") {cond = "LTI";} else if(root->right->type == "FLOAT") {cond = "LTF";} }
-		else if (root->op == "<=") { if(root->right->type == "INT") {cond = "LEI";} else if(root->right->type == "FLOAT") {cond = "LEF";} }
-		else if (root->op == "!=") { if(root->right->type == "INT") {cond = "NEI";} else if(root->right->type == "FLOAT") {cond = "NEF";} }
-		else if (root->op == "=") { if(root->right->type == "INT") {cond = "EQI";} else if(root->right->type == "FLOAT") {cond = "EQF";} }
+		if (root->op == ">") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GTF";} }
+		else if (root->op == ">=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GEF";} }
+		else if (root->op == "<") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LTF";} }
+		else if (root->op == "<=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LEF";} }
+		else if (root->op == "!=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "NEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "NEF";} }
+		else if (root->op == "=") { if(root->right->type == "INT" || root->left->type == "INT" ) {cond = "EQI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "EQF";} }
 		else { cond = "Error"; };
 
 		std::ostringstream os;
@@ -297,7 +297,7 @@ CodeObject* parseAST(ASTNode* root) {
 		std::ostringstream ostmp;
 		ostmp << CodeObject::ifCt++;
 		labels.push_back("ELSE_" + ostmp.str());
-        tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
 		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "ELSE_" + ostmp.str()));
 		return tmp;
 	}
@@ -329,18 +329,20 @@ CodeObject* parseAST(ASTNode* root) {
 		std::ostringstream ostmp;
 		ostmp << CodeObject::resultCt++;
 		std::string strtmp = "r"+ ostmp.str();
-		tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
 		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_START_"+ os.str()));
+    tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
+    tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
+    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
 
-    if (root->op == ">") { if(root->right->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT") {cond = "GTF";} }
-		else if (root->op == ">=") { if(root->right->type == "INT") {cond = "GEI";} else if(root->right->type == "FLOAT") {cond = "GEF";} }
-		else if (root->op == "<") { if(root->right->type == "INT") {cond = "LTI";} else if(root->right->type == "FLOAT") {cond = "LTF";} }
-		else if (root->op == "<=") { if(root->right->type == "INT") {cond = "LEI";} else if(root->right->type == "FLOAT") {cond = "LEF";} }
-		else if (root->op == "!=") { if(root->right->type == "INT") {cond = "NEI";} else if(root->right->type == "FLOAT") {cond = "NEF";} }
-		else if (root->op == "=") { if(root->right->type == "INT") {cond = "EQI";} else if(root->right->type == "FLOAT") {cond = "EQF";} }
+
+    if (root->op == ">") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GTF";} }
+		else if (root->op == ">=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GEF";} }
+		else if (root->op == "<") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LTF";} }
+		else if (root->op == "<=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LEF";} }
+		else if (root->op == "!=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "NEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "NEF";} }
+		else if (root->op == "=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "EQI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "EQF";} }
 		else { cond = "Error"; };
-		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
-		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
+
 
 		std::ostringstream ostr;
 		ostr << CodeObject::whileCt++;
@@ -404,7 +406,10 @@ CodeObject* parseAST(ASTNode* root) {
 			tmp->IRseq.push_back(IRNode("ADDI",left->result,right->result,tmp->result));
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("ADDF",left->result,right->result,tmp->result));
-		}
+		} else {
+      std::cout << "***HERE***   " << tmp->type << "\n";
+      tmp->IRseq.push_back(IRNode("ADD?",left->result,right->result,tmp->result));
+    }
 		return tmp;
 	} else if(root->op == "-") {
 		CodeObject* tmp = new CodeObject();
@@ -419,7 +424,11 @@ CodeObject* parseAST(ASTNode* root) {
 			tmp->IRseq.push_back(IRNode("SUBI",left->result,right->result,tmp->result));
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("SUBF",left->result,right->result,tmp->result));
-		}
+		} else {
+      std::cout << "***HERE***   " << tmp->type << "\n";
+      tmp->IRseq.push_back(IRNode("SUB?",left->result,right->result,tmp->result));
+    }
+
 		return tmp;
 	} else if(root->op == "*") {
 		CodeObject* tmp = new CodeObject();
@@ -434,7 +443,11 @@ CodeObject* parseAST(ASTNode* root) {
 			tmp->IRseq.push_back(IRNode("MULI",left->result,right->result,tmp->result));
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("MULF",left->result,right->result,tmp->result));
-		}
+		} else {
+      std::cout << "***HERE***   " << tmp->type << "\n";
+      tmp->IRseq.push_back(IRNode("MUL?",left->result,right->result,tmp->result));
+    }
+
 		return tmp;
 	} else if(root->op == "/") {
 		CodeObject* tmp = new CodeObject();
@@ -449,7 +462,11 @@ CodeObject* parseAST(ASTNode* root) {
 			tmp->IRseq.push_back(IRNode("DIVI",left->result,right->result,tmp->result));
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("DIVF",left->result,right->result,tmp->result));
-		}
+		} else {
+      std::cout << "***HERE***   " << tmp->type << "\n";
+      tmp->IRseq.push_back(IRNode("DIV?",left->result,right->result,tmp->result));
+    }
+
 		return tmp;
 	} else if(root->op == ":=") {
 		CodeObject* tmp = new CodeObject();
@@ -467,7 +484,11 @@ CodeObject* parseAST(ASTNode* root) {
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("STOREF",right->result, "", tmpresult));
 			tmp->IRseq.push_back(IRNode("STOREF",tmpresult, "", tmp->result));
-		}
+		} else {
+      std::cout << "***HERE***   " << tmp->type << "\n";
+      tmp->IRseq.push_back(IRNode("STORE?",left->result,right->result,tmp->result));
+    }
+
 		return tmp;
 	}
 	return NULL;
