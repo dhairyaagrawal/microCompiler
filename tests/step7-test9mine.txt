@@ -1,0 +1,129 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREF 0.0001  r0
+;STOREF r0  tolerance
+;READF   num
+;STOREF num  r1
+;STOREF r1  approx
+;STOREI 0  r2
+;STOREI r2  count
+;STOREF 0.0  r3
+;STOREF r3  diff
+;STOREI 0  r4
+;STOREI r4  enough
+;LABEL   WHILE_START_1
+;STOREI 1  r5
+;NEI enough r5 WHILE_END_2
+;ADDI count 1 r6
+;STOREI r6  r7
+;STOREI r7  count
+;DIVF num approx r8
+;ADDF approx r8 r9
+;MULF 0.5 r9 r10
+;STOREF r10  r11
+;STOREF r11  newapprox
+;SUBF approx newapprox r12
+;STOREF r12  r13
+;STOREF r13  diff
+;STOREI 0.0  r14
+;GTF diff r14 ELSE_1
+;STOREI tolerance  r15
+;LTF diff r15 ELSE_2
+;STOREI 1  r16
+;STOREI r16  enough
+;LABEL   ELSE_2
+;JUMP   END_IF_ELSE3
+;LABEL   ELSE_1
+;SUBF 0.0 tolerance r17
+;STOREI r17  r18
+; diff r18 ELSE_4
+;STOREI 1  r19
+;STOREI r19  enough
+;LABEL   ELSE_4
+;LABEL   END_IF_ELSE3
+;STOREF newapprox  r20
+;STOREF r20  approx
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_2
+;WRITEF approx  
+;WRITES space  
+;WRITEI count  
+;WRITES eol  
+;END_RETURN   
+var count
+var enough
+var newapprox
+var approx
+var num
+var tolerance
+var diff
+str eol "\n"
+str space " "
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 0.0001 r0
+move r0 tolerance
+sys readr num
+move num r1
+move r1 approx
+move 0 r2
+move r2 count
+move 0.0 r3
+move r3 diff
+move 0 r4
+move r4 enough
+label WHILE_START_1
+move 1 r5
+cmpi enough r5
+jeq WHILE_END_2
+move count r6
+addi 1 r6
+move r6 r7
+move r7 count
+move num r8
+divr approx r8
+move approx r9
+addr r8 r9
+move 0.5 r10
+mulr r9 r10
+move r10 r11
+move r11 newapprox
+move approx r12
+subr newapprox r12
+move r12 r13
+move r13 diff
+move 0.0 r14
+cmpr diff r14
+jle ELSE_1
+move tolerance r15
+cmpr diff r15
+jge ELSE_2
+move 1 r16
+move r16 enough
+label ELSE_2
+jmp END_IF_ELSE3
+label ELSE_1
+move 0.0 r17
+subr tolerance r17
+move r17 r18
+move 1 r19
+move r19 enough
+label ELSE_4
+label END_IF_ELSE3
+move newapprox r20
+move r20 approx
+jmp WHILE_START_1
+label WHILE_END_2
+sys writer approx
+sys writes space
+sys writei count
+sys writes eol
+unlnk
+ret

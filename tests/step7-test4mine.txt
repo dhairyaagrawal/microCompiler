@@ -1,0 +1,77 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREI 17  r0
+;STOREI r0  i
+;STOREI 0  r1
+;STOREI r1  j
+;STOREI 0  r2
+;STOREI r2  k
+;LABEL   WHILE_START_1
+;STOREI j  r3
+;NEI i r3 WHILE_END_2
+;WRITES guess  
+;READI   j
+;STOREI j  r4
+;EQI i r4 ELSE_1
+;WRITES correct  
+;JUMP   END_IF_ELSE2
+;LABEL   ELSE_1
+;WRITES wrong  
+;LABEL   END_IF_ELSE2
+;ADDI k 1 r5
+;STOREI r5  r6
+;STOREI r6  k
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_2
+;WRITES out1  
+;WRITEI k  
+;WRITES out2  
+;END_RETURN   
+str guess "Guess a number: "
+str correct "Correct!\n"
+str wrong "Wrong!\n"
+str out1 "It took you "
+str out2 " guesses"
+var i
+var j
+var k
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 17 r0
+move r0 i
+move 0 r1
+move r1 j
+move 0 r2
+move r2 k
+label WHILE_START_1
+move j r3
+cmpi i r3
+jeq WHILE_END_2
+sys writes guess
+sys readi j
+move j r4
+cmpi i r4
+jne ELSE_1
+sys writes correct
+jmp END_IF_ELSE2
+label ELSE_1
+sys writes wrong
+label END_IF_ELSE2
+move k r5
+addi 1 r5
+move r5 r6
+move r6 k
+jmp WHILE_START_1
+label WHILE_END_2
+sys writes out1
+sys writei k
+sys writes out2
+unlnk
+ret

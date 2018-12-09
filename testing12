@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./myparser.o <tests/step7-test12.txt >tests/step7-test12mine.txt
+./tiny tests/step7-test12mine.txt < tests/step7-test12input.txt
+./tiny tests/step7-test12out.txt < tests/step7-test12input.txt

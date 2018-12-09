@@ -1,0 +1,274 @@
+;LABEL   FUNC_main
+;LINK   0
+;READI   a
+;READI   b
+;READI   c
+;READI   d
+;READF   x
+;READF   y
+;READF   z
+;WRITEI a  
+;WRITES newline  
+;WRITEI b  
+;WRITES newline  
+;WRITEI c  
+;WRITES newline  
+;WRITEI d  
+;WRITES newline  
+;ADDI a b r0
+;STOREI r0  r1
+;STOREI r1  a
+;WRITEI a  
+;WRITES newline  
+;MULI a c r2
+;STOREI r2  r3
+;STOREI r3  b
+;WRITEI b  
+;WRITES newline  
+;SUBI 0 a r4
+;ADDI r4 b r5
+;STOREI r5  r6
+;STOREI r6  c
+;WRITEI c  
+;WRITES newline  
+;SUBI 0 d r7
+;STOREI r7  r8
+;STOREI r8  d
+;WRITEI d  
+;WRITES newline  
+;ADDI a b r9
+;ADDI d c r10
+;MULI r9 r10 r11
+;ADDI a b r12
+;ADDI r12 c r13
+;ADDI r13 d r14
+;DIVI r14 a r15
+;SUBI r11 r15 r16
+;STOREI r16  r17
+;STOREI r17  a
+;WRITEI a  
+;WRITES newline  
+;ADDI a 10 r18
+;STOREI r18  r19
+;STOREI r19  a
+;WRITEI a  
+;WRITES newline  
+;ADDI b a r20
+;ADDI r20 10 r21
+;STOREI r21  r22
+;STOREI r22  b
+;WRITEI b  
+;WRITES newline  
+;SUBI 0 10 r23
+;STOREI r23  r24
+;STOREI r24  c
+;WRITEI c  
+;WRITES newline  
+;WRITEF x  
+;WRITES newline  
+;WRITEF z  
+;WRITES newline  
+;WRITEF y  
+;WRITES newline  
+;DIVF z 2.0 r25
+;STOREF r25  r26
+;STOREF r26  x
+;DIVF z y r27
+;STOREF r27  r28
+;STOREF r28  y
+;WRITEF x  
+;WRITES newline  
+;WRITEF y  
+;WRITES newline  
+;ADDF x y r29
+;ADDF r29 z r30
+;DIVF r30 z r31
+;STOREF r31  r32
+;STOREF r32  t
+;WRITEF t  
+;WRITES newline  
+;MULF t t r33
+;STOREF r33  r34
+;STOREF r34  t
+;WRITEF t  
+;WRITES newline  
+;ADDF t z r35
+;ADDF r35 t r36
+;DIVF t 2.0 r37
+;ADDF r36 r37 r38
+;DIVF z 4.0 r39
+;ADDF r38 r39 r40
+;DIVF z 5.0 r41
+;ADDF r40 r41 r42
+;DIVF z 6.0 r43
+;ADDF r42 r43 r44
+;DIVF z 7.0 r45
+;ADDF r44 r45 r46
+;STOREF r46  r47
+;STOREF r47  t
+;WRITEF t  
+;WRITES newline  
+;END_RETURN   
+var a
+var b
+var c
+var d
+var x
+var y
+var z
+var t
+str newline "\n"
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+sys readi a
+sys readi b
+sys readi c
+sys readi d
+sys readr x
+sys readr y
+sys readr z
+sys writei a
+sys writes newline
+sys writei b
+sys writes newline
+sys writei c
+sys writes newline
+sys writei d
+sys writes newline
+move a r0
+addi b r0
+move r0 r1
+move r1 a
+sys writei a
+sys writes newline
+move a r2
+muli c r2
+move r2 r3
+move r3 b
+sys writei b
+sys writes newline
+move 0 r4
+subi a r4
+move r4 r5
+addi b r5
+move r5 r6
+move r6 c
+sys writei c
+sys writes newline
+move 0 r7
+subi d r7
+move r7 r8
+move r8 d
+sys writei d
+sys writes newline
+move a r9
+addi b r9
+move d r10
+addi c r10
+move r9 r11
+muli r10 r11
+move a r12
+addi b r12
+move r12 r13
+addi c r13
+move r13 r14
+addi d r14
+move r14 r15
+divi a r15
+move r11 r16
+subi r15 r16
+move r16 r17
+move r17 a
+sys writei a
+sys writes newline
+move a r18
+addi 10 r18
+move r18 r19
+move r19 a
+sys writei a
+sys writes newline
+move b r20
+addi a r20
+move r20 r21
+addi 10 r21
+move r21 r22
+move r22 b
+sys writei b
+sys writes newline
+move 0 r23
+subi 10 r23
+move r23 r24
+move r24 c
+sys writei c
+sys writes newline
+sys writer x
+sys writes newline
+sys writer z
+sys writes newline
+sys writer y
+sys writes newline
+move z r25
+divr 2.0 r25
+move r25 r26
+move r26 x
+move z r27
+divr y r27
+move r27 r28
+move r28 y
+sys writer x
+sys writes newline
+sys writer y
+sys writes newline
+move x r29
+addr y r29
+move r29 r30
+addr z r30
+move r30 r31
+divr z r31
+move r31 r32
+move r32 t
+sys writer t
+sys writes newline
+move t r33
+mulr t r33
+move r33 r34
+move r34 t
+sys writer t
+sys writes newline
+move t r35
+addr z r35
+move r35 r36
+addr t r36
+move t r37
+divr 2.0 r37
+move r36 r38
+addr r37 r38
+move z r39
+divr 4.0 r39
+move r38 r40
+addr r39 r40
+move z r41
+divr 5.0 r41
+move r40 r42
+addr r41 r42
+move z r43
+divr 6.0 r43
+move r42 r44
+addr r43 r44
+move z r45
+divr 7.0 r45
+move r44 r46
+addr r45 r46
+move r46 r47
+move r47 t
+sys writer t
+sys writes newline
+unlnk
+ret

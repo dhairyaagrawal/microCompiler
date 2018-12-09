@@ -1,3 +1,64 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREF 0.001  r0
+;STOREF r0  error
+;READF   x1
+;READF   n
+;MULF x1 x1 r1
+;SUBF r1 n r2
+;STOREF r2  r3
+;STOREF r3  fx
+;MULF 2.0 x1 r4
+;STOREF r4  r5
+;STOREF r5  dfx
+;DIVF fx dfx r6
+;SUBF x1 r6 r7
+;STOREF r7  r8
+;STOREF r8  x2
+;STOREI 0  r9
+;STOREI r9  i
+;LABEL   WHILE_START_1
+;STOREI 2  r10
+;LTI i r10 WHILE_END_2
+;STOREF x2  r11
+;STOREF r11  x1
+;MULF x1 x1 r12
+;SUBF r12 n r13
+;STOREF r13  r14
+;STOREF r14  fx
+;MULF 2.0 x1 r15
+;STOREF r15  r16
+;STOREF r16  dfx
+;DIVF fx dfx r17
+;SUBF x1 r17 r18
+;STOREF r18  r19
+;STOREF r19  x2
+;ADDI i 1 r20
+;STOREI r20  r21
+;STOREI r21  i
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_2
+;LABEL   WHILE_START_3
+;STOREI error  r23
+;SUBF x1 x2 r22
+;GTF r22 r23 WHILE_END_4
+;STOREF x2  r24
+;STOREF r24  x1
+;MULF x1 x1 r25
+;SUBF r25 n r26
+;STOREF r26  r27
+;STOREF r27  fx
+;MULF 2.0 x1 r28
+;STOREF r28  r29
+;STOREF r29  dfx
+;DIVF fx dfx r30
+;SUBF x1 r30 r31
+;STOREF r31  r32
+;STOREF r32  x2
+;JUMP   WHILE_START_3
+;LABEL   WHILE_END_4
+;WRITEF x2  
+;END_RETURN   
 str dummy "abcde"
 var n
 var x1
@@ -37,8 +98,8 @@ move r7 r8
 move r8 x2
 move 0 r9
 move r9 i
-move 2 r10
 label WHILE_START_1
+move 2 r10
 cmpi i r10
 jge WHILE_END_2
 move x2 r11
@@ -65,8 +126,8 @@ move r20 r21
 move r21 i
 jmp WHILE_START_1
 label WHILE_END_2
-move error r23
 label WHILE_START_3
+move error r23
 move x1 r22
 subr x2 r22
 cmpr r22 r23

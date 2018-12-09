@@ -1,0 +1,73 @@
+;LABEL   FUNC_main
+;LINK   0
+;READF   num
+;STOREI 1  r0
+;STOREI r0  j
+;STOREF num  r1
+;STOREF r1  approx
+;STOREI 100  r2
+;STOREI r2  i
+;LABEL   WHILE_START_1
+;STOREI 0  r3
+;NEI i r3 WHILE_END_2
+;DIVF num approx r4
+;ADDF approx r4 r5
+;MULF 0.5 r5 r6
+;STOREF r6  r7
+;STOREF r7  newapprox
+;STOREF newapprox  r8
+;STOREF r8  approx
+;SUBI i 1 r9
+;STOREI r9  r10
+;STOREI r10  i
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_2
+;WRITEF approx  
+;WRITES eol  
+;END_RETURN   
+var i
+var j
+var newapprox
+var approx
+var num
+str eol "\n"
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+sys readr num
+move 1 r0
+move r0 j
+move num r1
+move r1 approx
+move 100 r2
+move r2 i
+label WHILE_START_1
+move 0 r3
+cmpi i r3
+jeq WHILE_END_2
+move num r4
+divr approx r4
+move approx r5
+addr r4 r5
+move 0.5 r6
+mulr r5 r6
+move r6 r7
+move r7 newapprox
+move newapprox r8
+move r8 approx
+move i r9
+subi 1 r9
+move r9 r10
+move r10 i
+jmp WHILE_START_1
+label WHILE_END_2
+sys writer approx
+sys writes eol
+unlnk
+ret

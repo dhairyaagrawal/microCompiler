@@ -1,3 +1,42 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREI 0  r0
+;STOREI r0  i
+;STOREI 0  r1
+;STOREI r1  j
+;STOREI 0  r2
+;STOREI r2  k
+;STOREI 0  r3
+;STOREI r3  result
+;LABEL   WHILE_START_1
+;STOREI 99  r4
+;LEI i r4 WHILE_END_2
+;LABEL   WHILE_START_3
+;STOREI 99  r5
+;LEI j r5 WHILE_END_4
+;LABEL   WHILE_START_5
+;STOREI 100  r6
+;LTI k r6 WHILE_END_6
+;ADDI result 1 r7
+;STOREI r7  r8
+;STOREI r8  result
+;ADDI k 1 r9
+;STOREI r9  r10
+;STOREI r10  k
+;JUMP   WHILE_START_5
+;LABEL   WHILE_END_6
+;ADDI j 1 r11
+;STOREI r11  r12
+;STOREI r12  j
+;JUMP   WHILE_START_3
+;LABEL   WHILE_END_4
+;ADDI i 1 r13
+;STOREI r13  r14
+;STOREI r14  i
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_2
+;WRITEI result  
+;END_RETURN   
 str dummy "abcde"
 var i
 var j
@@ -20,16 +59,16 @@ move 0 r2
 move r2 k
 move 0 r3
 move r3 result
-move 99 r4
 label WHILE_START_1
+move 99 r4
 cmpi i r4
 jgt WHILE_END_2
-move 99 r5
 label WHILE_START_3
+move 99 r5
 cmpi j r5
 jgt WHILE_END_4
-move 100 r6
 label WHILE_START_5
+move 100 r6
 cmpi k r6
 jge WHILE_END_6
 move result r7
