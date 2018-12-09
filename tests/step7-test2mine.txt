@@ -1,0 +1,106 @@
+str input "Please input an integer number: "
+str space " "
+str eol "\n"
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_F
+link 2
+move 2 r0
+cmpi $2 r0
+jle ELSE_1
+push
+push r0
+push r1
+push r2
+push r3
+push r1
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r2
+move r2 $-1
+push
+push r0
+push r1
+push r2
+push r3
+push r3
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r4
+move r4 $-2
+move r5 r6
+move r6 $7
+unlnk
+ret
+jmp END_IF_ELSE2
+label ELSE_1
+move 0 r7
+cmpi $2 r7
+jne ELSE_3
+move 0 r8
+move r8 $7
+unlnk
+ret
+jmp END_IF_ELSE4
+label ELSE_3
+move 1 r9
+cmpi $2 r9
+jne ELSE_5
+move 1 r10
+move r10 $7
+unlnk
+ret
+jmp END_IF_ELSE6
+label ELSE_5
+move 1 r11
+move r11 $7
+unlnk
+ret
+label END_IF_ELSE6
+label END_IF_ELSE4
+label END_IF_ELSE2
+unlnk
+ret
+label FUNC_main
+link 3
+sys writes input
+sys readi $-2
+move $-2 r13
+label WHILE_START_1
+push
+push r0
+push r1
+push r2
+push r3
+push $-1
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r14
+move r14 $-3
+sys writei $-1
+sys writes space
+sys writei $-3
+sys writes eol
+jmp WHILE_START_1
+label WHILE_END_2
+unlnk
+ret
+unlnk
+ret

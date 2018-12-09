@@ -1,0 +1,96 @@
+str dummy "abcde"
+var n
+var x1
+var x2
+var fx
+var dfx
+var error
+var i
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 0.001 r0
+move r0 error
+sys readr x1
+sys readr n
+move x1 r1
+mulr x1 r1
+move r1 r2
+subr n r2
+move r2 r3
+move r3 fx
+move 2.0 r4
+mulr x1 r4
+move r4 r5
+move r5 dfx
+move fx r6
+divr dfx r6
+move x1 r7
+subr r6 r7
+move r7 r8
+move r8 x2
+move 0 r9
+move r9 i
+move 2 r10
+label WHILE_START_1
+cmpi i r10
+jge WHILE_END_2
+move x2 r11
+move r11 x1
+move x1 r12
+mulr x1 r12
+move r12 r13
+subr n r13
+move r13 r14
+move r14 fx
+move 2.0 r15
+mulr x1 r15
+move r15 r16
+move r16 dfx
+move fx r17
+divr dfx r17
+move x1 r18
+subr r17 r18
+move r18 r19
+move r19 x2
+move i r20
+addi 1 r20
+move r20 r21
+move r21 i
+jmp WHILE_START_1
+label WHILE_END_2
+move error r23
+label WHILE_START_3
+move x1 r22
+subr x2 r22
+cmpr r22 r23
+jle WHILE_END_4
+move x2 r24
+move r24 x1
+move x1 r25
+mulr x1 r25
+move r25 r26
+subr n r26
+move r26 r27
+move r27 fx
+move 2.0 r28
+mulr x1 r28
+move r28 r29
+move r29 dfx
+move fx r30
+divr dfx r30
+move x1 r31
+subr r30 r31
+move r31 r32
+move r32 x2
+jmp WHILE_START_3
+label WHILE_END_4
+sys writer x2
+unlnk
+ret

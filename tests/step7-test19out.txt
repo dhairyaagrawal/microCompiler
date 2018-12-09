@@ -1,0 +1,82 @@
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 0  
+;READI a  
+;READI b  
+;READI c  
+;MULI a b !T0
+;ADDI c !T0 !T1
+;MULI a b !T2
+;ADDI !T2 c !T3
+;DIVI !T3 a !T4
+;ADDI !T1 !T4 !T5
+;STOREI 20 !T7 
+;ADDI !T5 !T7 !T6
+;STOREI !T6 !T8 
+;STOREI !T8 c 
+;MULI b b !T9
+;ADDI !T9 a !T10
+;STOREI !T10 !T11 
+;STOREI !T11 b 
+;MULI b a !T12
+;DIVI !T12 a !T13
+;STOREI !T13 !T14 
+;STOREI !T14 a 
+;WRITEI c  
+;WRITEI b  
+;WRITEI a  
+;UNLINK   
+;RET   
+var a
+var b
+var c
+push  
+push r0
+push r1
+push r2
+push r3
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  0
+sys readi a 
+sys readi b 
+sys readi c 
+move a r0
+muli b r0
+move c r1
+addi r0 r1
+move a r2
+muli b r2
+move r2 r3
+addi c r3
+move r3 r4
+divi a r4
+move r1 r5
+addi r4 r5
+move 20 r7
+move r5 r6
+addi r7 r6
+move r6 r8
+move r8 c
+move b r9
+muli b r9
+move r9 r10
+addi a r10
+move r10 r11
+move r11 b
+move b r12
+muli a r12
+move r12 r13
+divi a r13
+move r13 r14
+move r14 a
+sys writei c 
+sys writei b 
+sys writei a 
+unlnk
+ret

@@ -1,0 +1,59 @@
+str dummy "abcde"
+var i
+var j
+var k
+var result
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 0 r0
+move r0 i
+move 0 r1
+move r1 j
+move 0 r2
+move r2 k
+move 0 r3
+move r3 result
+move 99 r4
+label WHILE_START_1
+cmpi i r4
+jgt WHILE_END_2
+move 99 r5
+label WHILE_START_3
+cmpi j r5
+jgt WHILE_END_4
+move 100 r6
+label WHILE_START_5
+cmpi k r6
+jge WHILE_END_6
+move result r7
+addi 1 r7
+move r7 r8
+move r8 result
+move k r9
+addi 1 r9
+move r9 r10
+move r10 k
+jmp WHILE_START_5
+label WHILE_END_6
+move j r11
+addi 1 r11
+move r11 r12
+move r12 j
+jmp WHILE_START_3
+label WHILE_END_4
+move i r13
+addi 1 r13
+move r13 r14
+move r14 i
+jmp WHILE_START_1
+label WHILE_END_2
+sys writei result
+unlnk
+ret
