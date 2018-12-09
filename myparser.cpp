@@ -166,35 +166,35 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 		assembly.push_back("cmpr " + ircode.src1 + " " + ircode.src2);
 		assembly.push_back("jne " + ircode.dest);
 	} else if(ircode.op == "LINK") {
-    assembly.push_back("link " + ircode.dest);
-  } else if(ircode.op == "PUSHREGS") {
-    assembly.push_back("push r0");
-    assembly.push_back("push r1");
-    assembly.push_back("push r2");
-    assembly.push_back("push r3");
-  } else if(ircode.op == "PUSH") {
-    assembly.push_back("push");
-  } else if(ircode.op == "PUSHREG") {
-    assembly.push_back("push " + ircode.dest);
-  } else if(ircode.op == "POP") {
-    assembly.push_back("pop");
-  } else if(ircode.op == "POPREGS") {
-    assembly.push_back("pop r3");
-    assembly.push_back("pop r2");
-    assembly.push_back("pop r1");
-    assembly.push_back("pop r0");
-  } else if(ircode.op == "FUNC") {
-    assembly.push_back("jsr " + ircode.dest);
-  } else if(ircode.op == "END_RETURN") {
-    assembly.push_back("unlnk");
-    assembly.push_back("ret");
-  } else if(ircode.op == "RTV") {
-    assembly.push_back("pop " + ircode.src1);
-    assembly.push_back("move " + ircode.src1 + " " + ircode.src2);
-  } else if(ircode.op == "RETURN") {
-    assembly.push_back("move " + ircode.src1 + " " + ircode.src2);
-    assembly.push_back("move " + ircode.src2 + " $" + ircode.dest);
-  }
+		assembly.push_back("link " + ircode.dest);
+	} else if(ircode.op == "PUSHREGS") {
+		assembly.push_back("push r0");
+		assembly.push_back("push r1");
+		assembly.push_back("push r2");
+		assembly.push_back("push r3");
+	} else if(ircode.op == "PUSH") {
+		assembly.push_back("push");
+	} else if(ircode.op == "PUSHREG") {
+		assembly.push_back("push " + ircode.dest);
+	} else if(ircode.op == "POP") {
+		assembly.push_back("pop");
+	} else if(ircode.op == "POPREGS") {
+		assembly.push_back("pop r3");
+		assembly.push_back("pop r2");
+		assembly.push_back("pop r1");
+		assembly.push_back("pop r0");
+	} else if(ircode.op == "FUNC") {
+		assembly.push_back("jsr " + ircode.dest);
+	} else if(ircode.op == "END_RETURN") {
+		assembly.push_back("unlnk");
+		assembly.push_back("ret");
+	} else if(ircode.op == "RTV") {
+		assembly.push_back("pop " + ircode.src1);
+		assembly.push_back("move " + ircode.src1 + " " + ircode.src2);
+	} else if(ircode.op == "RETURN") {
+		assembly.push_back("move " + ircode.src1 + " " + ircode.src2);
+		assembly.push_back("move " + ircode.src2 + " $" + ircode.dest);
+	}
 	return;
 }
 
