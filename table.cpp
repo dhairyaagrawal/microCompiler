@@ -48,6 +48,8 @@ std::string table::search(std::string name) {
 }
 
 std::string table::search_Stack(std::string name) {
+	if(name.substr(0,0) != "$") {return "";}
+
 	std::string token = name.substr(1, name.length());
 	int stack_num = atoi(token.c_str());
 	int index = 0;

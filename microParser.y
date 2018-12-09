@@ -52,8 +52,18 @@
 %type <treeNode> addop mulop expr expr_prefix factor factor_prefix primary postfix_expr assign_expr assign_stmt cond compop call_expr expr_list expr_list_tail;
 
 %%
-program:  {myStack = new stack; globalTable = currTable = table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);};
-id:       IDENTIFIER {if(io_flag) {$$ = $<stringValue>1;} else {if(!decl) {std::string s = currTable.index($<stringValue>1); if(s == "") {$$ = $<stringValue>1;} else {$$ = (strdup(s.c_str()));}} else {$$ = $<stringValue>1;}}} ;
+program:  {myStack = new stack; currTable = table("Symbol table GLOBAL"); listAST = new std::list<ASTNode*>;} PROGRAM id BEG pgm_body END {myStack->push(currTable);};
+id:       IDENTIFIER {
+			if(io_flag) 
+				{$$ = $<stringValue>1;} 
+			else 
+				{if(!decl) 
+					{std::string s = currTable.index($<stringValue>1); 
+					if(s == "") 
+						{$$ = $<stringValue>1;} 
+					else 
+						{$$ = (strdup(s.c_str()));}} 
+				else {$$ = $<stringValue>1;}}};
 pgm_body: decl func_declarations;
 decl:     string_decl decl | var_decl decl | ;
 
@@ -65,13 +75,13 @@ var_type:   FLOAT {varType = "FLOAT";} | INT {varType = "INT";};
 any_type:   var_type | VOID;
 id_list:    id {if(flag) {currTable.add(table_entry(varType, ($<stringValue>1), ""));}
 				else {varType = currTable.search($<stringValue>1);
-				if(varType == "") {varType = "STRING";}
+				if(varType == "") {varType = myStack->tables[0].search($<stringValue>1);}
 				std::string s = currTable.index($<stringValue>1); if(s == "") {s = $<stringValue>1;}
 				tmpNode->right = new ASTNode(s,varType); tmpNode = tmpNode->right;}}
 			id_tail;
 id_tail:    "," id {if(flag) {currTable.add(table_entry(varType, ($<stringValue>2), ""));}
 					else {varType = currTable.search($<stringValue>2);
-					if(varType == "") {varType = "STRING";}
+					if(varType == "") {varType = myStack->tables[0].search($<stringValue>2);}
 					std::string s = currTable.index($<stringValue>2); if(s == "") {s = $<stringValue>2;}
 					tmpNode->right = new ASTNode(s,varType); tmpNode = tmpNode->right;}}
 			id_tail | ;
@@ -92,6 +102,8 @@ assign_stmt:        assign_expr {listAST->push_back($<treeNode>1);} ";";
 assign_expr:        id ":=" expr
 					{
 					varType = currTable.search_Stack($<stringValue>1);
+					if(varType == "") {varType = myStack->tables[0].search($<stringValue>1);}
+					//std::cout << "***IMP STATMENT: " << $<stringValue>1 << " " << varType << " END***\n";
 					tmpNode = new ASTNode($<stringValue>1,varType);
 					if($<treeNode>3->type == "PP"){
 					$$ = new ASTNode(tmpNode, $<treeNode>3, "POP", varType, NULL);
@@ -130,7 +142,7 @@ postfix_expr:       primary {$$ = $<treeNode>1;} | call_expr {$$ = $<treeNode>1;
 call_expr:          id "(" expr_list ")" {listAST->push_back(new ASTNode("PUSHREGS", "PUSHREGS")); $$ = new ASTNode($<stringValue>1, "PP");};
 expr_list:          expr {tmpNode = new ASTNode("ARG", "ARG"); tmpNode->right = $<treeNode>1; listAST->push_back(tmpNode);} expr_list_tail | {$$ = NULL;} ;
 expr_list_tail:     "," expr {tmpNode = new ASTNode("ARG", "ARG"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} expr_list_tail  | {$$ = NULL;} ;
-primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = currTable.search_Stack($<stringValue>1); $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
+primary:            "(" expr ")" {$$ = $<treeNode>2;} | id {varType = currTable.search_Stack($<stringValue>1); if(varType == "") {varType = myStack->tables[0].search($<stringValue>1);} $$ = new ASTNode($<stringValue>1,varType);} | INTLITERAL {$$ = new ASTNode($<stringValue>1,"INT");} | FLOATLITERAL {$$ = new ASTNode($<stringValue>1,"FLOAT");};
 addop:              "+" {$$ = new ASTNode("+");} | "-" {$$ = new ASTNode("-");};
 mulop:              "*" {$$ = new ASTNode("*");} | "/" {$$ = new ASTNode("/");};
 
