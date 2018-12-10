@@ -1,5 +1,0 @@
-#!/bin/bash
-
-./myparser.o <tests/step7-test8.txt >tests/step7-test8mine.txt
-./tiny tests/step7-test8mine.txt < tests/step7-test8input.txt
-./tiny tests/step7-test8out.txt < tests/step7-test8input.txt
