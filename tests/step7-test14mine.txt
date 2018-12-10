@@ -18,15 +18,15 @@
 ;PUSHREGS   
 ;FUNC   FUNC_function1
 ;POPREGS   
-;RTV r1 a 
+;RTV r0 a 
 ;PUSH   
 ;PUSHREGS   
 ;FUNC   FUNC_function2
 ;POPREGS   
-;RTV r2 c 
-;ADDI a b r3
-;STOREI r3  r4
-;STOREI r4  c
+;RTV r0 c 
+;ADDI a b r1
+;STOREI r1  r2
+;STOREI r2  c
 ;END_RETURN   
 var a
 var b
@@ -78,8 +78,8 @@ pop r3
 pop r2
 pop r1
 pop r0
-pop r1
-move r1 a
+pop r0
+move r0 a
 push
 push r0
 push r1
@@ -90,11 +90,11 @@ pop r3
 pop r2
 pop r1
 pop r0
-pop r2
+pop r0
+move r0 c
+move a r1
+addi b r1
+move r1 r2
 move r2 c
-move a r3
-addi b r3
-move r3 r4
-move r4 c
 unlnk
 ret

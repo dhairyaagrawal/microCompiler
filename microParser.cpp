@@ -1581,15 +1581,15 @@ yyreduce:
   case 4:
 #line 56 "microParser.y"
     {
-			if(io_flag)
-				{(yyval.stringValue) = (yyvsp[(1) - (1)].stringValue);}
-			else
-				{if(!decl)
-					{std::string s = currTable.index((yyvsp[(1) - (1)].stringValue));
-					if(s == "")
-						{(yyval.stringValue) = (yyvsp[(1) - (1)].stringValue);}
-					else
-						{(yyval.stringValue) = (strdup(s.c_str()));}}
+			if(io_flag) 
+				{(yyval.stringValue) = (yyvsp[(1) - (1)].stringValue);} 
+			else 
+				{if(!decl) 
+					{std::string s = currTable.index((yyvsp[(1) - (1)].stringValue)); 
+					if(s == "") 
+						{(yyval.stringValue) = (yyvsp[(1) - (1)].stringValue);} 
+					else 
+						{(yyval.stringValue) = (strdup(s.c_str()));}} 
 				else {(yyval.stringValue) = (yyvsp[(1) - (1)].stringValue);}};}
     break;
 
@@ -1678,7 +1678,7 @@ yyreduce:
 					if(varType == "") {varType = myStack->tables[0].search((yyvsp[(1) - (3)].stringValue));}
 					//std::cout << "***IMP STATMENT: " << $<stringValue>1 << " " << varType << " END***\n";
 					tmpNode = new ASTNode((yyvsp[(1) - (3)].stringValue),varType);
-					if((yyvsp[(3) - (3)].treeNode)->type == "POP"){
+					if((yyvsp[(3) - (3)].treeNode)->type == "PP"){
 					(yyval.treeNode) = new ASTNode(tmpNode, (yyvsp[(3) - (3)].treeNode), "POP", varType, NULL);
 					} else {
 					(yyval.treeNode) = new ASTNode(tmpNode, (yyvsp[(3) - (3)].treeNode), ":=", varType, NULL);}
@@ -1786,7 +1786,7 @@ yyreduce:
 
   case 64:
 #line 142 "microParser.y"
-    {listAST->push_back(new ASTNode("PUSHREGS", "PUSHREGS")); (yyval.treeNode) = new ASTNode((yyvsp[(1) - (4)].stringValue), "POP");;}
+    {listAST->push_back(new ASTNode("PUSHREGS", "PUSHREGS")); (yyval.treeNode) = new ASTNode((yyvsp[(1) - (4)].stringValue), "PP");;}
     break;
 
   case 65:

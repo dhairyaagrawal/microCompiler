@@ -2,30 +2,30 @@
 ;LINK   0
 ;STOREI 0  r0
 ;STOREI r0  i
-;STOREI 0  r1
-;STOREI r1  a
-;STOREI 0  r2
-;STOREI r2  b
+;STOREI 0  r0
+;STOREI r0  a
+;STOREI 0  r0
+;STOREI r0  b
 ;LABEL   WHILE_START_1
-;STOREI 10  r3
-;NEI i r3 WHILE_END_2
+;STOREI 10  r0
+;NEI i r0 WHILE_END_1
 ;READI   p
-;STOREI 10  r4
-;GTI p r4 ELSE_1
-;ADDI a 1 r5
-;STOREI r5  r6
-;STOREI r6  a
+;STOREI 10  r0
+;GTI p r0 ELSE_1
+;ADDI a 1 r0
+;STOREI r0  r1
+;STOREI r1  a
 ;JUMP   END_IF_ELSE2
 ;LABEL   ELSE_1
-;ADDI b 1 r7
-;STOREI r7  r8
-;STOREI r8  b
+;ADDI b 1 r0
+;STOREI r0  r1
+;STOREI r1  b
 ;LABEL   END_IF_ELSE2
-;ADDI i 1 r9
-;STOREI r9  r10
-;STOREI r10  i
+;ADDI i 1 r0
+;STOREI r0  r1
+;STOREI r1  i
 ;JUMP   WHILE_START_1
-;LABEL   WHILE_END_2
+;LABEL   WHILE_END_1
 ;WRITEI a  
 ;WRITEI b  
 ;END_RETURN   
@@ -44,35 +44,35 @@ label FUNC_main
 link 0
 move 0 r0
 move r0 i
-move 0 r1
-move r1 a
-move 0 r2
-move r2 b
+move 0 r0
+move r0 a
+move 0 r0
+move r0 b
 label WHILE_START_1
-move 10 r3
-cmpi i r3
-jeq WHILE_END_2
+move 10 r0
+cmpi i r0
+jeq WHILE_END_1
 sys readi p
-move 10 r4
-cmpi p r4
+move 10 r0
+cmpi p r0
 jle ELSE_1
-move a r5
-addi 1 r5
-move r5 r6
-move r6 a
+move a r0
+addi 1 r0
+move r0 r1
+move r1 a
 jmp END_IF_ELSE2
 label ELSE_1
-move b r7
-addi 1 r7
-move r7 r8
-move r8 b
+move b r0
+addi 1 r0
+move r0 r1
+move r1 b
 label END_IF_ELSE2
-move i r9
-addi 1 r9
-move r9 r10
-move r10 i
+move i r0
+addi 1 r0
+move r0 r1
+move r1 i
 jmp WHILE_START_1
-label WHILE_END_2
+label WHILE_END_1
 sys writei a
 sys writei b
 unlnk

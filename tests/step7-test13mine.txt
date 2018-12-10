@@ -11,24 +11,24 @@
 ;READI   a
 ;READI   b
 ;READI   c
-;STOREI 0  r1
-;STOREI r1  j
-;STOREI b  r2
-;EQI a r2 ELSE_1
-;STOREI 0  r3
-;STOREI r3  h
+;STOREI 0  r0
+;STOREI r0  j
+;STOREI b  r0
+;EQI a r0 ELSE_1
+;STOREI 0  r0
+;STOREI r0  h
 ;JUMP   END_IF_ELSE2
 ;LABEL   ELSE_1
 ;LABEL   WHILE_START_1
-;STOREI 10  r4
-;LEI j r4 WHILE_END_2
-;STOREI j  r5
-;STOREI r5  a
-;ADDI j 1 r6
-;STOREI r6  r7
-;STOREI r7  j
+;STOREI 10  r0
+;LEI j r0 WHILE_END_1
+;STOREI j  r0
+;STOREI r0  a
+;ADDI j 1 r0
+;STOREI r0  r1
+;STOREI r1  j
 ;JUMP   WHILE_START_1
-;LABEL   WHILE_END_2
+;LABEL   WHILE_END_1
 ;LABEL   END_IF_ELSE2
 ;PUSH   
 ;PUSHREGS   
@@ -40,8 +40,8 @@
 ;POP   
 ;POP   
 ;POPREGS   
-;RTV r8 c 
-;ADDI a b r9
+;RTV r0 c 
+;ADDI a b r0
 ;END_RETURN   
 ;END_RETURN   
 var a
@@ -76,27 +76,27 @@ link 0
 sys readi a
 sys readi b
 sys readi c
-move 0 r1
-move r1 j
-move b r2
-cmpi a r2
+move 0 r0
+move r0 j
+move b r0
+cmpi a r0
 jne ELSE_1
-move 0 r3
-move r3 h
+move 0 r0
+move r0 h
 jmp END_IF_ELSE2
 label ELSE_1
 label WHILE_START_1
-move 10 r4
-cmpi j r4
-jgt WHILE_END_2
-move j r5
-move r5 a
-move j r6
-addi 1 r6
-move r6 r7
-move r7 j
+move 10 r0
+cmpi j r0
+jgt WHILE_END_1
+move j r0
+move r0 a
+move j r0
+addi 1 r0
+move r0 r1
+move r1 j
 jmp WHILE_START_1
-label WHILE_END_2
+label WHILE_END_1
 label END_IF_ELSE2
 push
 push r0
@@ -114,10 +114,10 @@ pop r3
 pop r2
 pop r1
 pop r0
-pop r8
-move r8 c
-move a r9
-addi b r9
+pop r0
+move r0 c
+move a r0
+addi b r0
 unlnk
 ret
 unlnk

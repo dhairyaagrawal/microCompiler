@@ -2,33 +2,33 @@
 ;LINK   0
 ;STOREI 10  r0
 ;STOREI r0  i
-;STOREI 10  r1
-;STOREI r1  j
-;STOREI 1  r2
-;STOREI r2  b
+;STOREI 10  r0
+;STOREI r0  j
+;STOREI 1  r0
+;STOREI r0  b
 ;LABEL   WHILE_START_1
-;SUBI i 1 r3
-;STOREI r3  r4
-;LEI b r4 WHILE_END_2
-;STOREI 1  r5
-;STOREI r5  $2
-;LABEL   WHILE_START_3
-;SUBI j 1 r6
-;STOREI r6  r7
-;LEI $2 r7 WHILE_END_4
-;ADDI $2 1 r8
-;STOREI r8  r9
-;STOREI r9  $2
-;JUMP   WHILE_START_3
-;LABEL   WHILE_END_4
-;ADDI b 1 r10
-;STOREI r10  r11
-;STOREI r11  b
-;JUMP   WHILE_START_1
+;SUBI i 1 r0
+;STOREI r0  r1
+;LEI b r1 WHILE_END_1
+;STOREI 1  r0
+;STOREI r0  $2
+;LABEL   WHILE_START_2
+;SUBI j 1 r0
+;STOREI r0  r1
+;LEI $2 r1 WHILE_END_2
+;ADDI $2 1 r0
+;STOREI r0  r1
+;STOREI r1  $2
+;JUMP   WHILE_START_2
 ;LABEL   WHILE_END_2
+;ADDI b 1 r0
+;STOREI r0  r1
+;STOREI r1  b
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_1
 ;WRITEI $2  
-;ADDI $2 b r12
-;RETURN r12 r13 7
+;ADDI $2 b r0
+;RETURN r0 r1 7
 ;END_RETURN   
 ;END_RETURN   
 str str "test"
@@ -56,41 +56,41 @@ label FUNC_main
 link 0
 move 10 r0
 move r0 i
-move 10 r1
-move r1 j
-move 1 r2
-move r2 b
+move 10 r0
+move r0 j
+move 1 r0
+move r0 b
 label WHILE_START_1
-move i r3
-subi 1 r3
-move r3 r4
-cmpi b r4
+move i r0
+subi 1 r0
+move r0 r1
+cmpi b r1
+jgt WHILE_END_1
+move 1 r0
+move r0 $2
+label WHILE_START_2
+move j r0
+subi 1 r0
+move r0 r1
+cmpi $2 r1
 jgt WHILE_END_2
-move 1 r5
-move r5 $2
-label WHILE_START_3
-move j r6
-subi 1 r6
-move r6 r7
-cmpi $2 r7
-jgt WHILE_END_4
-move $2 r8
-addi 1 r8
-move r8 r9
-move r9 $2
-jmp WHILE_START_3
-label WHILE_END_4
-move b r10
-addi 1 r10
-move r10 r11
-move r11 b
-jmp WHILE_START_1
+move $2 r0
+addi 1 r0
+move r0 r1
+move r1 $2
+jmp WHILE_START_2
 label WHILE_END_2
+move b r0
+addi 1 r0
+move r0 r1
+move r1 b
+jmp WHILE_START_1
+label WHILE_END_1
 sys writei $2
-move $2 r12
-addi b r12
-move r12 r13
-move r13 $7
+move $2 r0
+addi b r0
+move r0 r1
+move r1 $7
 unlnk
 ret
 unlnk

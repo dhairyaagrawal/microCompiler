@@ -5,6 +5,7 @@
 #include <list>
 //#include <vector>
 #include "IRNode.h"
+//#include "Register.h"
 
 class CodeObject {
 public:
@@ -19,6 +20,7 @@ public:
     static int resultCt;
 	static int ifCt;
 	static int whileCt;
+	//static Register regFile;
 	//static std::vector<std::string> labels;
 };
 

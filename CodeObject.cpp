@@ -5,6 +5,8 @@ int CodeObject::resultCt = 0;
 int CodeObject::ifCt = 1;
 int CodeObject::whileCt = 1;
 
+//Register CodeObject::regFile();
+
 CodeObject::CodeObject() {}
 CodeObject::CodeObject(std::string res, std::string type_val) {
 	result = res;

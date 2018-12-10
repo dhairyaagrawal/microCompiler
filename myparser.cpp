@@ -1,3 +1,5 @@
+#include "Register.h"
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -13,6 +15,7 @@
 #include "CodeObject.h"
 #include "IRNode.h"
 
+
 extern int yyparse();
 extern int yylex();
 extern FILE * yyin;
@@ -22,11 +25,12 @@ extern int yylineno;
 extern stack* myStack;
 extern std::list<ASTNode*> * listAST;
 
-CodeObject* parseAST(ASTNode*);
+CodeObject* parseAST(ASTNode*, Register*);
 void generateASM(IRNode&, std::list<std::string>&);
 std::vector<std::string> labels;
 std::deque<std::string> args;
 int pop_count = 0;
+std::vector<Register*> oldRegs;
 
 int main (int argc, char * argv[]) {
   int flag;
@@ -46,13 +50,17 @@ int main (int argc, char * argv[]) {
   //myStack->tables[0].print_table();
   //std::cout << "BREAK!!!!!!!!!!!!\n";
 
+  Register *regFile = new Register;
+
   for(std::list<ASTNode*>::iterator it=listAST->begin();it!=listAST->end();++it) {
 	  //(*it)->print(); //prints AST
 	  //std::cout << std::endl;
 
-	  CodeObject* ircode = parseAST(*it);
+	  CodeObject* ircode = parseAST(*it, regFile);
 	  total->IRseq.splice(total->IRseq.end(),ircode->IRseq);
   }
+
+  //delete tmpReg;
 
   total->print(); //prints IR
 
@@ -198,7 +206,7 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 	return;
 }
 
-CodeObject* parseAST(ASTNode* root) {
+CodeObject* parseAST(ASTNode* root, Register* regFile) {
 	//POST-ORDER WALK: left, right, root
 	CodeObject* left = NULL;
 	CodeObject* right = NULL;
@@ -209,6 +217,8 @@ CodeObject* parseAST(ASTNode* root) {
     CodeObject* tmp = new CodeObject();
     tmp->IRseq.push_back(IRNode("PUSH", "", "", "")); //just a push
     tmp->IRseq.push_back(IRNode("PUSHREGS", "", "", "")); //PUSH r0, r1, r2, r3
+    oldRegs.push_back(regFile);
+    regFile = new Register();
     while(!args.empty()) {
       tmp->IRseq.push_back(IRNode("PUSHREG", "", "", args.front())); //PUSH irnode.dest
       args.pop_front(); //using a deque for args instead of vector
@@ -217,7 +227,7 @@ CodeObject* parseAST(ASTNode* root) {
   }
   if(root->type == "ARG") {
     CodeObject* tmp = new CodeObject();
-    right = parseAST(root->right);
+    right = parseAST(root->right, regFile);
     tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
     args.push_back(right->result);
     pop_count++;
@@ -230,8 +240,8 @@ CodeObject* parseAST(ASTNode* root) {
   }
   if(root->op == "POP") {
     CodeObject* tmp = new CodeObject();
-    left = parseAST(root->left);
-    right = parseAST(root->right);
+    left = parseAST(root->left, regFile);
+    right = parseAST(root->right, regFile);
 
     tmp->IRseq.push_back(IRNode("FUNC", "", "", "FUNC_" + right->result)); //jsr to FUNC_(right->result)
     while(pop_count != 0) {
@@ -239,11 +249,17 @@ CodeObject* parseAST(ASTNode* root) {
       pop_count--;
     }
     tmp->IRseq.push_back(IRNode("POPREGS", "", "", "")); //Pop r3, r2, r1, r0
-
-    std::ostringstream os;
+    //delete regFile;
+    //regFile = oldRegs.back();
+    //oldRegs.pop_back();
+    oldRegs.push_back(regFile);
+    regFile = new Register();
+    /*std::ostringstream os;
     os << CodeObject::resultCt++;
-    tmp->result = "r"+ os.str();
+    tmp->result = "r"+ os.str();*/
+    tmp->result = regFile->getsetRegNum();
     tmp->IRseq.push_back(IRNode("RTV", tmp->result, left->result, "")); //store tmp->result into left->result; tmp->result is new register with popped return value
+    regFile->setClean(tmp->result);
     return tmp;
   }
   if(root->type == "LINK") {
@@ -258,7 +274,7 @@ CodeObject* parseAST(ASTNode* root) {
   }
   if(root->type == "RETURN") {
     CodeObject* tmp = new CodeObject();
-    right = parseAST(root->right);
+    right = parseAST(root->right, regFile);
     tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
     std::string value;
     if(root->op == "6") {
@@ -266,10 +282,13 @@ CodeObject* parseAST(ASTNode* root) {
     }
     else {
       value = root->op;
-      std::ostringstream os;
+      /*std::ostringstream os;
       os << CodeObject::resultCt++;
-      tmp->result = "r"+ os.str();
+      tmp->result = "r"+ os.str();*/
+      tmp->result = regFile->getsetRegNum();
       tmp->IRseq.push_back(IRNode("RETURN", right->result, tmp->result, value)); //We want to store right->result into value in Assembly to put it on the stack
+      regFile->setClean(right->result);
+      regFile->setClean(tmp->result);
       tmp->IRseq.push_back(IRNode("END_RETURN", "", "", "")); //unlink return
     }
     return tmp;
@@ -277,8 +296,8 @@ CodeObject* parseAST(ASTNode* root) {
 	if(root->type == "IF") {
 		CodeObject* tmp = new CodeObject();
 		std::string cond;
-		left = parseAST(root->left);
-		right = parseAST(root->right);
+		left = parseAST(root->left, regFile);
+		right = parseAST(root->right, regFile);
 		if (root->op == ">") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GTF";} }
 		else if (root->op == ">=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GEF";} }
 		else if (root->op == "<") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LTF";} }
@@ -287,9 +306,10 @@ CodeObject* parseAST(ASTNode* root) {
 		else if (root->op == "=") { if(root->right->type == "INT" || root->left->type == "INT" ) {cond = "EQI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "EQF";} }
 		else { cond = "Error"; };
 
-		std::ostringstream os;
+		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
-		std::string strtmp = "r"+ os.str();
+		std::string strtmp = "r"+ os.str();*/
+		std::string strtmp = regFile->getsetRegNum();
 
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
@@ -297,8 +317,11 @@ CodeObject* parseAST(ASTNode* root) {
 		std::ostringstream ostmp;
 		ostmp << CodeObject::ifCt++;
 		labels.push_back("ELSE_" + ostmp.str());
-    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+		tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+		regFile->setClean(right->result);
 		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "ELSE_" + ostmp.str()));
+		regFile->setClean(left->result);
+		regFile->setClean(strtmp);
 		return tmp;
 	}
 	if (root->type == "ENDIF") {
@@ -319,23 +342,24 @@ CodeObject* parseAST(ASTNode* root) {
 	}
 	if (root->type == "WHILE") {
 		CodeObject* tmp = new CodeObject();
-        left = parseAST(root->left);
-        right = parseAST(root->right);
+        left = parseAST(root->left, regFile);
+        right = parseAST(root->right, regFile);
 
 		std::string cond;
 		std::ostringstream os;
-		os << CodeObject::whileCt++;
+		os << CodeObject::whileCt;
 
-		std::ostringstream ostmp;
+		/*std::ostringstream ostmp;
 		ostmp << CodeObject::resultCt++;
-		std::string strtmp = "r"+ ostmp.str();
+		std::string strtmp = "r"+ ostmp.str();*/
+		std::string strtmp = regFile->getsetRegNum();
 		tmp->IRseq.push_back(IRNode("LABEL", "", "", "WHILE_START_"+ os.str()));
-    tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
-    tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-    tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
+		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
+		tmp->IRseq.push_back(IRNode("STOREI", right->result, "", strtmp));
+		regFile->setClean(right->result);
 
-
-    if (root->op == ">") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GTF";} }
+		if (root->op == ">") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GTF";} }
 		else if (root->op == ">=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "GEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "GEF";} }
 		else if (root->op == "<") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LTI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LTF";} }
 		else if (root->op == "<=") { if(root->right->type == "INT" || root->left->type == "INT") {cond = "LEI";} else if(root->right->type == "FLOAT" || root->left->type == "FLOAT") {cond = "LEF";} }
@@ -346,8 +370,11 @@ CodeObject* parseAST(ASTNode* root) {
 
 		std::ostringstream ostr;
 		ostr << CodeObject::whileCt++;
+		//ostr << CodeObject::whileCt;
 
 		tmp->IRseq.push_back(IRNode(cond, left->result, strtmp, "WHILE_END_" + ostr.str()));
+		regFile->setClean(left->result);
+		regFile->setClean(strtmp);
 		labels.push_back("WHILE_END_" + ostr.str());
 		labels.push_back("WHILE_START_" + os.str());
 		return tmp;
@@ -384,10 +411,10 @@ CodeObject* parseAST(ASTNode* root) {
 
 
 	if(root->left != NULL) {
-		left = parseAST(root->left);
+		left = parseAST(root->left, regFile);
 	}
 	if(root->right != NULL) {
-		right = parseAST(root->right);
+		right = parseAST(root->right, regFile);
 	}
 	//do stuff
 	if(root->left == NULL and root->right == NULL) {
@@ -397,9 +424,12 @@ CodeObject* parseAST(ASTNode* root) {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		std::ostringstream os;
+
+		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
-		tmp->result = "r"+ os.str();
+		tmp->result = "r"+ os.str();*/
+		tmp->result = regFile->getsetRegNum();
+
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -410,14 +440,19 @@ CodeObject* parseAST(ASTNode* root) {
       std::cout << "***HERE***   " << tmp->type << "\n";
       tmp->IRseq.push_back(IRNode("ADD?",left->result,right->result,tmp->result));
     }
+		regFile->setClean(right->result);
+		regFile->setClean(left->result);
 		return tmp;
 	} else if(root->op == "-") {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		std::ostringstream os;
+
+		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
-		tmp->result = "r"+ os.str();
+		tmp->result = "r"+ os.str();*/
+		tmp->result = regFile->getsetRegNum();
+
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -428,15 +463,19 @@ CodeObject* parseAST(ASTNode* root) {
       std::cout << "***HERE***   " << tmp->type << "\n";
       tmp->IRseq.push_back(IRNode("SUB?",left->result,right->result,tmp->result));
     }
-
+		regFile->setClean(right->result);
+		regFile->setClean(left->result);
 		return tmp;
 	} else if(root->op == "*") {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		std::ostringstream os;
+
+		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
-		tmp->result = "r"+ os.str();
+		tmp->result = "r"+ os.str();*/
+		tmp->result = regFile->getsetRegNum();
+
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -447,15 +486,19 @@ CodeObject* parseAST(ASTNode* root) {
       std::cout << "***HERE***   " << tmp->type << "\n";
       tmp->IRseq.push_back(IRNode("MUL?",left->result,right->result,tmp->result));
     }
-
+		regFile->setClean(right->result);
+		regFile->setClean(left->result);
 		return tmp;
 	} else if(root->op == "/") {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
-		std::ostringstream os;
+
+		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
-		tmp->result = "r"+ os.str();
+		tmp->result = "r"+ os.str();*/
+		tmp->result = regFile->getsetRegNum();
+
 		tmp->type = left->type;
 
 		if(tmp->type == "INT") {
@@ -466,28 +509,35 @@ CodeObject* parseAST(ASTNode* root) {
       std::cout << "***HERE***   " << tmp->type << "\n";
       tmp->IRseq.push_back(IRNode("DIV?",left->result,right->result,tmp->result));
     }
-
+		regFile->setClean(right->result);
+		regFile->setClean(left->result);
 		return tmp;
 	} else if(root->op == ":=") {
 		CodeObject* tmp = new CodeObject();
 		tmp->IRseq.splice(tmp->IRseq.end(), left->IRseq);
 		tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
 		tmp->result = left->result;
+
 		tmp->type = left->type;
 
-		std::ostringstream os;
+		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
-		std::string tmpresult = "r"+ os.str();
+		std::string tmpresult = "r"+ os.str();*/
+		std::string tmpresult = regFile->getsetRegNum();
 		if(tmp->type == "INT") {
 			tmp->IRseq.push_back(IRNode("STOREI",right->result, "", tmpresult));
 			tmp->IRseq.push_back(IRNode("STOREI",tmpresult, "", tmp->result));
+			regFile->setClean(right->result);
+			regFile->setClean(tmpresult);
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("STOREF",right->result, "", tmpresult));
 			tmp->IRseq.push_back(IRNode("STOREF",tmpresult, "", tmp->result));
+			regFile->setClean(right->result);
+			regFile->setClean(tmpresult);
 		} else {
-      std::cout << "***HERE***   " << tmp->type << "\n";
-      tmp->IRseq.push_back(IRNode("STORE?",left->result,right->result,tmp->result));
-    }
+			std::cout << "***HERE***   " << tmp->type << "\n";
+			tmp->IRseq.push_back(IRNode("STORE?",left->result,right->result,tmp->result));
+		}
 
 		return tmp;
 	}

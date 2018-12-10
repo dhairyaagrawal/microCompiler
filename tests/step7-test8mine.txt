@@ -4,49 +4,49 @@
 ;READI   b
 ;LABEL   WHILE_START_1
 ;STOREI 120  r0
-;LEI a r0 WHILE_END_2
-;STOREI 1  r1
-;EQI b r1 ELSE_1
-;MULI 1 a r2
-;STOREI r2  r3
-;STOREI r3  g
+;LEI a r0 WHILE_END_1
+;STOREI 1  r0
+;EQI b r0 ELSE_1
+;MULI 1 a r0
+;STOREI r0  r1
+;STOREI r1  g
 ;WRITEI g  
 ;JUMP   END_IF_ELSE2
 ;LABEL   ELSE_1
-;STOREI 2  r4
-;EQI b r4 ELSE_3
-;MULI 2 a r5
-;STOREI r5  r6
-;STOREI r6  p
+;STOREI 2  r0
+;EQI b r0 ELSE_3
+;MULI 2 a r0
+;STOREI r0  r1
+;STOREI r1  p
 ;WRITEI p  
 ;JUMP   END_IF_ELSE4
 ;LABEL   ELSE_3
-;STOREI 3  r7
-;EQI b r7 ELSE_5
-;MULI 3 a r8
-;STOREI r8  r9
-;STOREI r9  k
+;STOREI 3  r0
+;EQI b r0 ELSE_5
+;MULI 3 a r0
+;STOREI r0  r1
+;STOREI r1  k
 ;WRITEI k  
 ;JUMP   END_IF_ELSE6
 ;LABEL   ELSE_5
-;STOREI 4  r10
-;EQI b r10 ELSE_7
-;MULI 4 a r11
-;STOREI r11  r12
-;STOREI r12  u
+;STOREI 4  r0
+;EQI b r0 ELSE_7
+;MULI 4 a r0
+;STOREI r0  r1
+;STOREI r1  u
 ;WRITEI u  
 ;LABEL   ELSE_7
 ;LABEL   END_IF_ELSE6
 ;LABEL   END_IF_ELSE4
 ;LABEL   END_IF_ELSE2
-;ADDI b 1 r13
-;STOREI r13  r14
-;STOREI r14  b
-;ADDI a 2 r15
-;STOREI r15  r16
-;STOREI r16  a
+;ADDI b 1 r0
+;STOREI r0  r1
+;STOREI r1  b
+;ADDI a 2 r0
+;STOREI r0  r1
+;STOREI r1  a
 ;JUMP   WHILE_START_1
-;LABEL   WHILE_END_2
+;LABEL   WHILE_END_1
 ;WRITEI a  
 ;WRITEI b  
 ;END_RETURN   
@@ -70,59 +70,59 @@ sys readi b
 label WHILE_START_1
 move 120 r0
 cmpi a r0
-jgt WHILE_END_2
-move 1 r1
-cmpi b r1
+jgt WHILE_END_1
+move 1 r0
+cmpi b r0
 jne ELSE_1
-move 1 r2
-muli a r2
-move r2 r3
-move r3 g
+move 1 r0
+muli a r0
+move r0 r1
+move r1 g
 sys writei g
 jmp END_IF_ELSE2
 label ELSE_1
-move 2 r4
-cmpi b r4
+move 2 r0
+cmpi b r0
 jne ELSE_3
-move 2 r5
-muli a r5
-move r5 r6
-move r6 p
+move 2 r0
+muli a r0
+move r0 r1
+move r1 p
 sys writei p
 jmp END_IF_ELSE4
 label ELSE_3
-move 3 r7
-cmpi b r7
+move 3 r0
+cmpi b r0
 jne ELSE_5
-move 3 r8
-muli a r8
-move r8 r9
-move r9 k
+move 3 r0
+muli a r0
+move r0 r1
+move r1 k
 sys writei k
 jmp END_IF_ELSE6
 label ELSE_5
-move 4 r10
-cmpi b r10
+move 4 r0
+cmpi b r0
 jne ELSE_7
-move 4 r11
-muli a r11
-move r11 r12
-move r12 u
+move 4 r0
+muli a r0
+move r0 r1
+move r1 u
 sys writei u
 label ELSE_7
 label END_IF_ELSE6
 label END_IF_ELSE4
 label END_IF_ELSE2
-move b r13
-addi 1 r13
-move r13 r14
-move r14 b
-move a r15
-addi 2 r15
-move r15 r16
-move r16 a
+move b r0
+addi 1 r0
+move r0 r1
+move r1 b
+move a r0
+addi 2 r0
+move r0 r1
+move r1 a
 jmp WHILE_START_1
-label WHILE_END_2
+label WHILE_END_1
 sys writei a
 sys writei b
 unlnk

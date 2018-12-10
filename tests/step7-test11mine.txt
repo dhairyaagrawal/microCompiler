@@ -2,28 +2,28 @@
 ;LINK   0
 ;STOREI 7  r0
 ;STOREI r0  num
-;STOREI 2  r1
-;STOREI r1  i
-;STOREI 42  r2
-;STOREI r2  a
-;STOREI 5  r3
-;LTI i r3 ELSE_1
-;ADDI num a r4
-;STOREI r4  r5
-;STOREI r5  num
-;STOREI 3  r6
-;LTI i r6 ELSE_2
-;ADDI num a r7
-;STOREI r7  r8
-;STOREI r8  num
+;STOREI 2  r0
+;STOREI r0  i
+;STOREI 42  r0
+;STOREI r0  a
+;STOREI 5  r0
+;LTI i r0 ELSE_1
+;ADDI num a r0
+;STOREI r0  r1
+;STOREI r1  num
+;STOREI 3  r0
+;LTI i r0 ELSE_2
+;ADDI num a r0
+;STOREI r0  r1
+;STOREI r1  num
 ;LABEL   ELSE_2
 ;JUMP   END_IF_ELSE3
 ;LABEL   ELSE_1
-;STOREI 5  r9
-;GEI i r9 ELSE_4
-;SUBI num a r10
-;STOREI r10  r11
-;STOREI r11  num
+;STOREI 5  r0
+;GEI i r0 ELSE_4
+;SUBI num a r0
+;STOREI r0  r1
+;STOREI r1  num
 ;LABEL   ELSE_4
 ;LABEL   END_IF_ELSE3
 ;WRITEI num  
@@ -42,34 +42,34 @@ label FUNC_main
 link 0
 move 7 r0
 move r0 num
-move 2 r1
-move r1 i
-move 42 r2
-move r2 a
-move 5 r3
-cmpi i r3
+move 2 r0
+move r0 i
+move 42 r0
+move r0 a
+move 5 r0
+cmpi i r0
 jge ELSE_1
-move num r4
-addi a r4
-move r4 r5
-move r5 num
-move 3 r6
-cmpi i r6
+move num r0
+addi a r0
+move r0 r1
+move r1 num
+move 3 r0
+cmpi i r0
 jge ELSE_2
-move num r7
-addi a r7
-move r7 r8
-move r8 num
+move num r0
+addi a r0
+move r0 r1
+move r1 num
 label ELSE_2
 jmp END_IF_ELSE3
 label ELSE_1
-move 5 r9
-cmpi i r9
+move 5 r0
+cmpi i r0
 jlt ELSE_4
-move num r10
-subi a r10
-move r10 r11
-move r11 num
+move num r0
+subi a r0
+move r0 r1
+move r1 num
 label ELSE_4
 label END_IF_ELSE3
 sys writei num

@@ -5,21 +5,21 @@
 ;READI   c
 ;MULI a b r0
 ;ADDI c r0 r1
-;MULI a b r2
-;ADDI r2 c r3
-;DIVI r3 a r4
-;ADDI r1 r4 r5
-;ADDI r5 20 r6
-;STOREI r6  r7
-;STOREI r7  c
-;MULI b b r8
-;ADDI r8 a r9
-;STOREI r9  r10
-;STOREI r10  b
-;MULI b a r11
-;DIVI r11 a r12
-;STOREI r12  r13
-;STOREI r13  a
+;MULI a b r0
+;ADDI r0 c r2
+;DIVI r2 a r0
+;ADDI r1 r0 r2
+;ADDI r2 20 r0
+;STOREI r0  r1
+;STOREI r1  c
+;MULI b b r0
+;ADDI r0 a r1
+;STOREI r1  r0
+;STOREI r0  b
+;MULI b a r0
+;DIVI r0 a r1
+;STOREI r1  r0
+;STOREI r0  a
 ;WRITEI c  
 ;WRITEI b  
 ;WRITEI a  
@@ -43,30 +43,30 @@ move a r0
 muli b r0
 move c r1
 addi r0 r1
-move a r2
-muli b r2
-move r2 r3
-addi c r3
-move r3 r4
-divi a r4
-move r1 r5
-addi r4 r5
-move r5 r6
-addi 20 r6
-move r6 r7
-move r7 c
-move b r8
-muli b r8
-move r8 r9
-addi a r9
-move r9 r10
-move r10 b
-move b r11
-muli a r11
-move r11 r12
-divi a r12
-move r12 r13
-move r13 a
+move a r0
+muli b r0
+move r0 r2
+addi c r2
+move r2 r0
+divi a r0
+move r1 r2
+addi r0 r2
+move r2 r0
+addi 20 r0
+move r0 r1
+move r1 c
+move b r0
+muli b r0
+move r0 r1
+addi a r1
+move r1 r0
+move r0 b
+move b r0
+muli a r0
+move r0 r1
+divi a r1
+move r1 r0
+move r0 a
 sys writei c
 sys writei b
 sys writei a

@@ -10,7 +10,7 @@ microParser.cpp : microParser.y
 	@bison microParser.y -d -o microParser.cpp
 
 compiler : microParser.cpp lex.yy.c
-	@g++ -g microParser.cpp lex.yy.c myparser.cpp table.cpp stack.cpp table_entry.cpp ASTNode.cpp CodeObject.cpp IRNode.cpp -o myparser.o
+	@g++ -g microParser.cpp lex.yy.c myparser.cpp Register.cpp table.cpp stack.cpp table_entry.cpp ASTNode.cpp CodeObject.cpp IRNode.cpp -o myparser.o
 
 clean : lex.yy.c microParser.cpp microParser.hpp
 	@rm lex.yy.c microParser.cpp microParser.hpp
