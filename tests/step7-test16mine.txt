@@ -28,7 +28,6 @@
 ;LABEL   WHILE_END_1
 ;WRITEI $2  
 ;ADDI $2 b r0
-;RETURN r0 r1 7
 ;END_RETURN   
 ;END_RETURN   
 str str "test"
@@ -89,8 +88,6 @@ label WHILE_END_1
 sys writei $2
 move $2 r0
 addi b r0
-move r0 r1
-move r1 $7
 unlnk
 ret
 unlnk

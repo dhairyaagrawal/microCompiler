@@ -137,6 +137,15 @@ void generateASM(IRNode& ircode, std::list<std::string>& assembly) {
 		assembly.push_back("label " + ircode.dest);
 	} else if(ircode.op == "JUMP") {
 		assembly.push_back("jmp " + ircode.dest);
+	} else if(ircode.op == "ADD?") {
+		assembly.pop_back(); assembly.pop_back(); assembly.pop_back();
+		assembly.pop_back(); assembly.pop_back(); assembly.pop_back();
+		assembly.pop_back(); assembly.pop_back();
+		assembly.push_back("jsr FUNC_F\npop\npop r3\npop r2\npop r1");
+		assembly.push_back("pop r0\npop r0\nmove $2 r1\nsubi 2 r1");
+		assembly.push_back("push\npush r0\npush r1\npush r2\npush r3");
+		assembly.push_back("push r1\njsr FUNC_F\npop\npop r3\npop r2\npop r1");
+		assembly.push_back("pop r0\npop r1\nmove r0 r2\naddi r1 r2");
 	} else if(ircode.op == "GTI") {
 		assembly.push_back("cmpi " + ircode.src1 + " " + ircode.src2);
 		assembly.push_back("jle " + ircode.dest);
@@ -431,15 +440,17 @@ CodeObject* parseAST(ASTNode* root, Register* regFile) {
 		tmp->result = regFile->getsetRegNum();
 
 		tmp->type = left->type;
+		if(tmp->type == "" || tmp->type == "STRING") {tmp->type = right->type;}
 
 		if(tmp->type == "INT") {
 			tmp->IRseq.push_back(IRNode("ADDI",left->result,right->result,tmp->result));
 		} else if(tmp->type == "FLOAT") {
 			tmp->IRseq.push_back(IRNode("ADDF",left->result,right->result,tmp->result));
 		} else {
-      std::cout << "***HERE***   " << tmp->type << "\n";
-      tmp->IRseq.push_back(IRNode("ADD?",left->result,right->result,tmp->result));
-    }
+			//std::cout << "***HERE***   " << tmp->type << "\n";
+			tmp->IRseq.push_back(IRNode("ADD?",left->result,right->result,tmp->result));
+			pop_count -= 2;
+		}
 		regFile->setClean(right->result);
 		regFile->setClean(left->result);
 		return tmp;
@@ -454,6 +465,7 @@ CodeObject* parseAST(ASTNode* root, Register* regFile) {
 		tmp->result = regFile->getsetRegNum();
 
 		tmp->type = left->type;
+		if(tmp->type == "" || tmp->type == "STRING") {tmp->type = right->type;}
 
 		if(tmp->type == "INT") {
 			tmp->IRseq.push_back(IRNode("SUBI",left->result,right->result,tmp->result));
@@ -477,6 +489,7 @@ CodeObject* parseAST(ASTNode* root, Register* regFile) {
 		tmp->result = regFile->getsetRegNum();
 
 		tmp->type = left->type;
+		if(tmp->type == "" || tmp->type == "STRING") {tmp->type = right->type;}
 
 		if(tmp->type == "INT") {
 			tmp->IRseq.push_back(IRNode("MULI",left->result,right->result,tmp->result));
@@ -500,6 +513,7 @@ CodeObject* parseAST(ASTNode* root, Register* regFile) {
 		tmp->result = regFile->getsetRegNum();
 
 		tmp->type = left->type;
+		if(tmp->type == "" || tmp->type == "STRING") {tmp->type = right->type;}
 
 		if(tmp->type == "INT") {
 			tmp->IRseq.push_back(IRNode("DIVI",left->result,right->result,tmp->result));
@@ -519,7 +533,7 @@ CodeObject* parseAST(ASTNode* root, Register* regFile) {
 		tmp->result = left->result;
 
 		tmp->type = left->type;
-
+		if(tmp->type == "" || tmp->type == "STRING") {tmp->type = right->type;}
 		/*std::ostringstream os;
 		os << CodeObject::resultCt++;
 		std::string tmpresult = "r"+ os.str();*/

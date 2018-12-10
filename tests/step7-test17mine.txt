@@ -1,15 +1,12 @@
-***HERE***   STRING
-***HERE***   STRING
-***HERE***   PP
 ;LABEL   FUNC_F
 ;LINK   0
 ;STOREI 2  r0
 ;GTI $2 r0 ELSE_1
-;SUB? $2 1 r0
+;SUBI $2 1 r0
 ;PUSH   
 ;PUSHREGS   
 ;PUSHREG   r0
-;SUB? $2 2 r1
+;SUBI $2 2 r1
 ;PUSH   
 ;PUSHREGS   
 ;PUSHREG   r1
@@ -50,8 +47,6 @@
 ;PUSHREG   $-1
 ;FUNC   FUNC_F
 ;POP   
-;POP   
-;POP   
 ;POPREGS   
 ;RTV r0 $-3 
 ;WRITEI $-1  
@@ -79,18 +74,38 @@ link 0
 move 2 r0
 cmpi $2 r0
 jle ELSE_1
+move $2 r0
+subi 1 r0
 push
 push r0
 push r1
 push r2
 push r3
 push r0
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r0
+move $2 r1
+subi 2 r1
 push
 push r0
 push r1
 push r2
 push r3
 push r1
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r1
+move r0 r2
+addi r1 r2
 move r2 r3
 move r3 $7
 unlnk
@@ -141,8 +156,6 @@ push r2
 push r3
 push $-1
 jsr FUNC_F
-pop
-pop
 pop
 pop r3
 pop r2
