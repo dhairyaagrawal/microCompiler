@@ -112,7 +112,7 @@ assign_expr:        id ":=" expr
 					} ;
 read_stmt:          {flag = 0; listID = new ASTNode("READ","READ"); tmpNode = listID;} READ "(" {io_flag = 1;} id_list {io_flag = 0;} ")" ";" {listAST->push_back(listID);};
 write_stmt:         {flag = 0; listID = new ASTNode("WRITE","WRITE"); tmpNode = listID;} WRITE "(" {io_flag = 1;} id_list {io_flag = 0;} ")" ";" {listAST->push_back(listID);};
-return_stmt:        RETURN expr ";" {std::stringstream ss; if(currTable.title == "Symbol table main") {ss << 6;} else {ss << currTable.pos + 6;} tmpNode = new ASTNode(ss.str(), "RETURN"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} ;
+return_stmt:        RETURN expr ";" {std::stringstream ss; if(currTable.title == "Symbol table main") {ss << -1;} else {ss << currTable.pos + 6;} tmpNode = new ASTNode(ss.str(), "RETURN"); tmpNode->right = $<treeNode>2; listAST->push_back(tmpNode);} ;
 
 expr:               expr_prefix factor
 					{if($<treeNode>1 == NULL)

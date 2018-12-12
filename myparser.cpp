@@ -286,7 +286,7 @@ CodeObject* parseAST(ASTNode* root, Register* regFile) {
     right = parseAST(root->right, regFile);
     tmp->IRseq.splice(tmp->IRseq.end(), right->IRseq);
     std::string value;
-    if(root->op == "6") {
+    if(root->op == "-1") {
       tmp->IRseq.push_back(IRNode("END_RETURN", "", "", "")); //unlink return; return 0 is end of main; "6" means "0" + 6 in grammar file
     }
     else {
