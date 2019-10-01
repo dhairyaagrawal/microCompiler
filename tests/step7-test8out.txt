@@ -1,0 +1,151 @@
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 0  
+;READI a  
+;READI b  
+;LABEL WHILE_LOOP_START_1  
+;STOREI 120 !T0 
+;GTI a !T0 WHILE_LOOP_END_1
+;STOREI 1 !T1 
+;NEI b !T1 ELSE_2
+;STOREI 1 !T3 
+;MULI !T3 a !T2
+;STOREI !T2 !T4 
+;STOREI !T4 g 
+;WRITEI g  
+;JUMP END_IF_ELSE2  
+;LABEL ELSE_2  
+;STOREI 2 !T5 
+;NEI b !T5 ELSE_3
+;STOREI 2 !T7 
+;MULI !T7 a !T6
+;STOREI !T6 !T8 
+;STOREI !T8 p 
+;WRITEI p  
+;JUMP END_IF_ELSE3  
+;LABEL ELSE_3  
+;STOREI 3 !T9 
+;NEI b !T9 ELSE_4
+;STOREI 3 !T11 
+;MULI !T11 a !T10
+;STOREI !T10 !T12 
+;STOREI !T12 k 
+;WRITEI k  
+;JUMP END_IF_ELSE4  
+;LABEL ELSE_4  
+;STOREI 4 !T13 
+;NEI b !T13 ELSE_5
+;STOREI 4 !T15 
+;MULI !T15 a !T14
+;STOREI !T14 !T16 
+;STOREI !T16 u 
+;WRITEI u  
+;JUMP END_IF_ELSE5  
+;LABEL ELSE_5  
+;LABEL END_IF_ELSE5  
+;LABEL END_IF_ELSE4  
+;LABEL END_IF_ELSE3  
+;LABEL END_IF_ELSE2  
+;STOREI 1 !T18 
+;ADDI b !T18 !T17
+;STOREI !T17 !T19 
+;STOREI !T19 b 
+;STOREI 2 !T21 
+;ADDI a !T21 !T20
+;STOREI !T20 !T22 
+;STOREI !T22 a 
+;JUMP WHILE_LOOP_START_1  
+;LABEL WHILE_LOOP_END_1  
+;WRITEI a  
+;WRITEI b  
+;UNLINK   
+;RET   
+var a
+var b
+var k
+var g
+var p
+var u
+push  
+push r0
+push r1
+push r2
+push r3
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  0
+sys readi a 
+sys readi b 
+label  WHILE_LOOP_START_1
+move 120 r0
+cmpi  a r0
+jgt  WHILE_LOOP_END_1
+move 1 r1
+cmpi  b r1
+jne  ELSE_2
+move 1 r3
+move r3 r2
+muli a r2
+move r2 r4
+move r4 g
+sys writei g 
+jmp  END_IF_ELSE2
+label  ELSE_2
+move 2 r5
+cmpi  b r5
+jne  ELSE_3
+move 2 r7
+move r7 r6
+muli a r6
+move r6 r8
+move r8 p
+sys writei p 
+jmp  END_IF_ELSE3
+label  ELSE_3
+move 3 r9
+cmpi  b r9
+jne  ELSE_4
+move 3 r11
+move r11 r10
+muli a r10
+move r10 r12
+move r12 k
+sys writei k 
+jmp  END_IF_ELSE4
+label  ELSE_4
+move 4 r13
+cmpi  b r13
+jne  ELSE_5
+move 4 r15
+move r15 r14
+muli a r14
+move r14 r16
+move r16 u
+sys writei u 
+jmp  END_IF_ELSE5
+label  ELSE_5
+label  END_IF_ELSE5
+label  END_IF_ELSE4
+label  END_IF_ELSE3
+label  END_IF_ELSE2
+move 1 r18
+move b r17
+addi r18 r17
+move r17 r19
+move r19 b
+move 2 r21
+move a r20
+addi r21 r20
+move r20 r22
+move r22 a
+jmp  WHILE_LOOP_START_1
+label  WHILE_LOOP_END_1
+sys writei a 
+sys writei b 
+unlnk
+ret

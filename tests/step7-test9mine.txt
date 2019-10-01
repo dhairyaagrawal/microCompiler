@@ -1,0 +1,131 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREF 0.0001  r0
+;STOREF r0  tolerance
+;READF   num
+;STOREF num  r0
+;STOREF r0  approx
+;STOREI 0  r0
+;STOREI r0  count
+;STOREF 0.0  r0
+;STOREF r0  diff
+;STOREI 0  r0
+;STOREI r0  enough
+;LABEL   WHILE_START_1
+;STOREI 1  r0
+;NEI enough r0 WHILE_END_1
+;ADDI count 1 r0
+;STOREI r0  r1
+;STOREI r1  count
+;DIVF num approx r0
+;ADDF approx r0 r1
+;MULF 0.5 r1 r0
+;STOREF r0  r1
+;STOREF r1  newapprox
+;SUBF approx newapprox r0
+;STOREF r0  r1
+;STOREF r1  diff
+;STOREI 0.0  r0
+;GTF diff r0 ELSE_1
+;STOREI tolerance  r0
+;LTF diff r0 ELSE_2
+;STOREI 1  r0
+;STOREI r0  enough
+;LABEL   ELSE_2
+;JUMP   END_IF_ELSE3
+;LABEL   ELSE_1
+;SUBF 0.0 tolerance r0
+;STOREI r0  r1
+;GTF diff r1 ELSE_4
+;STOREI 1  r0
+;STOREI r0  enough
+;LABEL   ELSE_4
+;LABEL   END_IF_ELSE3
+;STOREF newapprox  r0
+;STOREF r0  approx
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_1
+;WRITEF approx  
+;WRITES space  
+;WRITEI count  
+;WRITES eol  
+;END_RETURN   
+var count
+var enough
+var newapprox
+var approx
+var num
+var tolerance
+var diff
+str eol "\n"
+str space " "
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 0.0001 r0
+move r0 tolerance
+sys readr num
+move num r0
+move r0 approx
+move 0 r0
+move r0 count
+move 0.0 r0
+move r0 diff
+move 0 r0
+move r0 enough
+label WHILE_START_1
+move 1 r0
+cmpi enough r0
+jeq WHILE_END_1
+move count r0
+addi 1 r0
+move r0 r1
+move r1 count
+move num r0
+divr approx r0
+move approx r1
+addr r0 r1
+move 0.5 r0
+mulr r1 r0
+move r0 r1
+move r1 newapprox
+move approx r0
+subr newapprox r0
+move r0 r1
+move r1 diff
+move 0.0 r0
+cmpr diff r0
+jle ELSE_1
+move tolerance r0
+cmpr diff r0
+jge ELSE_2
+move 1 r0
+move r0 enough
+label ELSE_2
+jmp END_IF_ELSE3
+label ELSE_1
+move 0.0 r0
+subr tolerance r0
+move r0 r1
+cmpr diff r1
+jle ELSE_4
+move 1 r0
+move r0 enough
+label ELSE_4
+label END_IF_ELSE3
+move newapprox r0
+move r0 approx
+jmp WHILE_START_1
+label WHILE_END_1
+sys writer approx
+sys writes space
+sys writei count
+sys writes eol
+unlnk
+ret

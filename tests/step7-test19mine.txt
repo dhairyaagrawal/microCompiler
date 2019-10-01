@@ -1,0 +1,74 @@
+;LABEL   FUNC_main
+;LINK   0
+;READI   a
+;READI   b
+;READI   c
+;MULI a b r0
+;ADDI c r0 r1
+;MULI a b r0
+;ADDI r0 c r2
+;DIVI r2 a r0
+;ADDI r1 r0 r2
+;ADDI r2 20 r0
+;STOREI r0  r1
+;STOREI r1  c
+;MULI b b r0
+;ADDI r0 a r1
+;STOREI r1  r0
+;STOREI r0  b
+;MULI b a r0
+;DIVI r0 a r1
+;STOREI r1  r0
+;STOREI r0  a
+;WRITEI c  
+;WRITEI b  
+;WRITEI a  
+;END_RETURN   
+var a
+var b
+var c
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+sys readi a
+sys readi b
+sys readi c
+move a r0
+muli b r0
+move c r1
+addi r0 r1
+move a r0
+muli b r0
+move r0 r2
+addi c r2
+move r2 r0
+divi a r0
+move r1 r2
+addi r0 r2
+move r2 r0
+addi 20 r0
+move r0 r1
+move r1 c
+move b r0
+muli b r0
+move r0 r1
+addi a r1
+move r1 r0
+move r0 b
+move b r0
+muli a r0
+move r0 r1
+divi a r1
+move r1 r0
+move r0 a
+sys writei c
+sys writei b
+sys writei a
+unlnk
+ret

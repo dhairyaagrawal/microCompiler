@@ -1,0 +1,98 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREI 0  r0
+;STOREI r0  i
+;STOREI 0  r0
+;STOREI r0  j
+;STOREI 0  r0
+;STOREI r0  k
+;STOREI 0  r0
+;STOREI r0  result
+;LABEL   WHILE_START_1
+;STOREI 99  r0
+;LEI i r0 WHILE_END_1
+;LABEL   WHILE_START_2
+;STOREI 99  r0
+;LEI j r0 WHILE_END_2
+;LABEL   WHILE_START_3
+;STOREI 100  r0
+;LTI k r0 WHILE_END_3
+;ADDI result 1 r0
+;STOREI r0  r1
+;STOREI r1  result
+;ADDI k 1 r0
+;STOREI r0  r1
+;STOREI r1  k
+;JUMP   WHILE_START_3
+;LABEL   WHILE_END_3
+;ADDI j 1 r0
+;STOREI r0  r1
+;STOREI r1  j
+;JUMP   WHILE_START_2
+;LABEL   WHILE_END_2
+;ADDI i 1 r0
+;STOREI r0  r1
+;STOREI r1  i
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_1
+;WRITEI result  
+;END_RETURN   
+str dummy "abcde"
+var i
+var j
+var k
+var result
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 0 r0
+move r0 i
+move 0 r0
+move r0 j
+move 0 r0
+move r0 k
+move 0 r0
+move r0 result
+label WHILE_START_1
+move 99 r0
+cmpi i r0
+jgt WHILE_END_1
+label WHILE_START_2
+move 99 r0
+cmpi j r0
+jgt WHILE_END_2
+label WHILE_START_3
+move 100 r0
+cmpi k r0
+jge WHILE_END_3
+move result r0
+addi 1 r0
+move r0 r1
+move r1 result
+move k r0
+addi 1 r0
+move r0 r1
+move r1 k
+jmp WHILE_START_3
+label WHILE_END_3
+move j r0
+addi 1 r0
+move r0 r1
+move r1 j
+jmp WHILE_START_2
+label WHILE_END_2
+move i r0
+addi 1 r0
+move r0 r1
+move r1 i
+jmp WHILE_START_1
+label WHILE_END_1
+sys writei result
+unlnk
+ret

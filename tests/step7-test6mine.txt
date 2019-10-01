@@ -1,0 +1,157 @@
+;LABEL   FUNC_main
+;LINK   0
+;STOREF 0.001  r0
+;STOREF r0  error
+;READF   x1
+;READF   n
+;MULF x1 x1 r0
+;SUBF r0 n r1
+;STOREF r1  r0
+;STOREF r0  fx
+;MULF 2.0 x1 r0
+;STOREF r0  r1
+;STOREF r1  dfx
+;DIVF fx dfx r0
+;SUBF x1 r0 r1
+;STOREF r1  r0
+;STOREF r0  x2
+;STOREI 0  r0
+;STOREI r0  i
+;LABEL   WHILE_START_1
+;STOREI 2  r0
+;LTI i r0 WHILE_END_1
+;STOREF x2  r0
+;STOREF r0  x1
+;MULF x1 x1 r0
+;SUBF r0 n r1
+;STOREF r1  r0
+;STOREF r0  fx
+;MULF 2.0 x1 r0
+;STOREF r0  r1
+;STOREF r1  dfx
+;DIVF fx dfx r0
+;SUBF x1 r0 r1
+;STOREF r1  r0
+;STOREF r0  x2
+;ADDI i 1 r0
+;STOREI r0  r1
+;STOREI r1  i
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_1
+;LABEL   WHILE_START_2
+;SUBF x1 x2 r0
+;STOREI error  r1
+;GTF r0 r1 WHILE_END_2
+;STOREF x2  r0
+;STOREF r0  x1
+;MULF x1 x1 r0
+;SUBF r0 n r1
+;STOREF r1  r0
+;STOREF r0  fx
+;MULF 2.0 x1 r0
+;STOREF r0  r1
+;STOREF r1  dfx
+;DIVF fx dfx r0
+;SUBF x1 r0 r1
+;STOREF r1  r0
+;STOREF r0  x2
+;JUMP   WHILE_START_2
+;LABEL   WHILE_END_2
+;WRITEF x2  
+;END_RETURN   
+str dummy "abcde"
+var n
+var x1
+var x2
+var fx
+var dfx
+var error
+var i
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_main
+link 0
+move 0.001 r0
+move r0 error
+sys readr x1
+sys readr n
+move x1 r0
+mulr x1 r0
+move r0 r1
+subr n r1
+move r1 r0
+move r0 fx
+move 2.0 r0
+mulr x1 r0
+move r0 r1
+move r1 dfx
+move fx r0
+divr dfx r0
+move x1 r1
+subr r0 r1
+move r1 r0
+move r0 x2
+move 0 r0
+move r0 i
+label WHILE_START_1
+move 2 r0
+cmpi i r0
+jge WHILE_END_1
+move x2 r0
+move r0 x1
+move x1 r0
+mulr x1 r0
+move r0 r1
+subr n r1
+move r1 r0
+move r0 fx
+move 2.0 r0
+mulr x1 r0
+move r0 r1
+move r1 dfx
+move fx r0
+divr dfx r0
+move x1 r1
+subr r0 r1
+move r1 r0
+move r0 x2
+move i r0
+addi 1 r0
+move r0 r1
+move r1 i
+jmp WHILE_START_1
+label WHILE_END_1
+label WHILE_START_2
+move x1 r0
+subr x2 r0
+move error r1
+cmpr r0 r1
+jle WHILE_END_2
+move x2 r0
+move r0 x1
+move x1 r0
+mulr x1 r0
+move r0 r1
+subr n r1
+move r1 r0
+move r0 fx
+move 2.0 r0
+mulr x1 r0
+move r0 r1
+move r1 dfx
+move fx r0
+divr dfx r0
+move x1 r1
+subr r0 r1
+move r1 r0
+move r0 x2
+jmp WHILE_START_2
+label WHILE_END_2
+sys writer x2
+unlnk
+ret

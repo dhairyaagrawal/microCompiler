@@ -1,0 +1,177 @@
+;LABEL   FUNC_F
+;LINK   0
+;STOREI 2  r0
+;GTI $2 r0 ELSE_1
+;SUBI $2 1 r0
+;PUSH   
+;PUSHREGS   
+;PUSHREG   r0
+;SUBI $2 2 r1
+;PUSH   
+;PUSHREGS   
+;PUSHREG   r1
+;ADD? F F r2
+;RETURN r2 r3 7
+;END_RETURN   
+;JUMP   END_IF_ELSE2
+;LABEL   ELSE_1
+;STOREI 0  r2
+;EQI $2 r2 ELSE_3
+;RETURN 0 r2 7
+;END_RETURN   
+;JUMP   END_IF_ELSE4
+;LABEL   ELSE_3
+;STOREI 1  r2
+;EQI $2 r2 ELSE_5
+;RETURN 1 r2 7
+;END_RETURN   
+;JUMP   END_IF_ELSE6
+;LABEL   ELSE_5
+;RETURN 1 r2 7
+;END_RETURN   
+;LABEL   END_IF_ELSE6
+;LABEL   END_IF_ELSE4
+;LABEL   END_IF_ELSE2
+;END_RETURN   
+;LABEL   FUNC_main
+;LINK   3
+;WRITES input  
+;READI   $-2
+;STOREI 0  r2
+;STOREI r2  $-1
+;LABEL   WHILE_START_1
+;STOREI $-2  r2
+;NEI $-1 r2 WHILE_END_1
+;PUSH   
+;PUSHREGS   
+;PUSHREG   $-1
+;FUNC   FUNC_F
+;POP   
+;POPREGS   
+;RTV r0 $-3 
+;WRITEI $-1  
+;WRITES space  
+;WRITEI $-3  
+;WRITES eol  
+;ADDI $-1 1 r2
+;STOREI r2  r3
+;STOREI r3  $-1
+;JUMP   WHILE_START_1
+;LABEL   WHILE_END_1
+;END_RETURN   
+str input "Please input an integer number: "
+str space " "
+str eol "\n"
+push
+push r0
+push r1
+push r2
+push r3
+jsr FUNC_main
+sys halt
+label FUNC_F
+link 0
+move 2 r0
+cmpi $2 r0
+jle ELSE_1
+move $2 r0
+subi 1 r0
+push
+push r0
+push r1
+push r2
+push r3
+push r0
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r0
+move $2 r1
+subi 2 r1
+push
+push r0
+push r1
+push r2
+push r3
+push r1
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r1
+move r0 r2
+addi r1 r2
+move r2 r3
+move r3 $7
+unlnk
+ret
+jmp END_IF_ELSE2
+label ELSE_1
+move 0 r2
+cmpi $2 r2
+jne ELSE_3
+move 0 r2
+move r2 $7
+unlnk
+ret
+jmp END_IF_ELSE4
+label ELSE_3
+move 1 r2
+cmpi $2 r2
+jne ELSE_5
+move 1 r2
+move r2 $7
+unlnk
+ret
+jmp END_IF_ELSE6
+label ELSE_5
+move 1 r2
+move r2 $7
+unlnk
+ret
+label END_IF_ELSE6
+label END_IF_ELSE4
+label END_IF_ELSE2
+unlnk
+ret
+label FUNC_main
+link 3
+sys writes input
+sys readi $-2
+move 0 r2
+move r2 $-1
+label WHILE_START_1
+move $-2 r2
+cmpi $-1 r2
+jeq WHILE_END_1
+push
+push r0
+push r1
+push r2
+push r3
+push $-1
+jsr FUNC_F
+pop
+pop r3
+pop r2
+pop r1
+pop r0
+pop r0
+move r0 $-3
+sys writei $-1
+sys writes space
+sys writei $-3
+sys writes eol
+move $-1 r2
+addi 1 r2
+move r2 r3
+move r3 $-1
+jmp WHILE_START_1
+label WHILE_END_1
+unlnk
+ret

@@ -1,0 +1,143 @@
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_printout  
+;LINK 0  
+;WRITEI $2  
+;WRITEI $3  
+;WRITEI $4  
+;STOREI 0 !T0 
+;STOREI !T0 $9 
+;UNLINK   
+;RET   
+;UNLINK   
+;RET   
+;LABEL FUNC_main  
+;LINK 0  
+;READI a  
+;READI b  
+;READI c  
+;STOREI 0 !T1 
+;STOREI !T1 !T2 
+;STOREI !T2 j 
+;STOREI b !T3 
+;NEI a !T3 ELSE_1
+;STOREI 0 !T4 
+;STOREI !T4 !T5 
+;STOREI !T5 h 
+;JUMP END_IF_ELSE1  
+;LABEL ELSE_1  
+;LABEL WHILE_LOOP_START_2  
+;STOREI 10 !T6 
+;GTI j !T6 WHILE_LOOP_END_2
+;STOREI j !T7 
+;STOREI !T7 a 
+;STOREI 1 !T9 
+;ADDI j !T9 !T8
+;STOREI !T8 !T10 
+;STOREI !T10 j 
+;JUMP WHILE_LOOP_START_2  
+;LABEL WHILE_LOOP_END_2  
+;LABEL END_IF_ELSE1  
+;PUSH   
+;PUSHREGS   
+;PUSH j  
+;PUSH b  
+;PUSH a  
+;JSR FUNC_printout  
+;POP   
+;POP   
+;POP   
+;POPREGS   
+;POP !T11  
+;STOREI !T11 !T12 
+;STOREI !T12 c 
+;ADDI a b !T13
+;UNLINK   
+;RET   
+;UNLINK   
+;RET   
+var a
+var b
+var c
+var x
+var y
+var z
+var h
+var j
+var k
+push  
+push r0
+push r1
+push r2
+push r3
+jsr  FUNC_main
+sys halt
+label  FUNC_printout
+link  0
+sys writei $2 
+sys writei $3 
+sys writei $4 
+move 0 r0
+move r0 $9
+unlnk
+ret
+unlnk
+ret
+label  FUNC_main
+link  0
+sys readi a 
+sys readi b 
+sys readi c 
+move 0 r1
+move r1 r2
+move r2 j
+move b r3
+cmpi  a r3
+jne  ELSE_1
+move 0 r4
+move r4 r5
+move r5 h
+jmp  END_IF_ELSE1
+label  ELSE_1
+label  WHILE_LOOP_START_2
+move 10 r6
+cmpi  j r6
+jgt  WHILE_LOOP_END_2
+move j r7
+move r7 a
+move 1 r9
+move j r8
+addi r9 r8
+move r8 r10
+move r10 j
+jmp  WHILE_LOOP_START_2
+label  WHILE_LOOP_END_2
+label  END_IF_ELSE1
+push  
+push r0
+push r1
+push r2
+push r3
+push  j
+push  b
+push  a
+jsr  FUNC_printout
+pop  
+pop  
+pop  
+pop r3
+pop r2
+pop r1
+pop r0
+pop  r11
+move r11 r12
+move r12 c
+move a r13
+addi b r13
+unlnk
+ret
+unlnk
+ret

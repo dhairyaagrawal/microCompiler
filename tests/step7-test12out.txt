@@ -1,0 +1,84 @@
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 0  
+;STOREI 1 !T0 
+;STOREI !T0 !T1 
+;STOREI !T1 a 
+;STOREI 2 !T2 
+;STOREI !T2 !T3 
+;STOREI !T3 b 
+;READI c  
+;READI d  
+;MULI a c !T4
+;MULI b d !T5
+;ADDI !T4 !T5 !T6
+;STOREI !T6 !T7 
+;STOREI !T7 e 
+;MULI a b !T8
+;MULI !T8 c !T9
+;MULI !T9 d !T10
+;STOREI !T10 !T11 
+;STOREI !T11 a 
+;WRITEI a  
+;WRITES newline  
+;WRITEI c  
+;WRITES newline  
+;WRITEI d  
+;WRITES newline  
+;WRITEI e  
+;WRITES newline  
+;UNLINK   
+;RET   
+var a
+var b
+var c
+var d
+var e
+str newline "\n"
+push  
+push r0
+push r1
+push r2
+push r3
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  0
+move 1 r0
+move r0 r1
+move r1 a
+move 2 r2
+move r2 r3
+move r3 b
+sys readi c 
+sys readi d 
+move a r4
+muli c r4
+move b r5
+muli d r5
+move r4 r6
+addi r5 r6
+move r6 r7
+move r7 e
+move a r8
+muli b r8
+move r8 r9
+muli c r9
+move r9 r10
+muli d r10
+move r10 r11
+move r11 a
+sys writei a 
+sys writes newline 
+sys writei c 
+sys writes newline 
+sys writei d 
+sys writes newline 
+sys writei e 
+sys writes newline 
+unlnk
+ret
